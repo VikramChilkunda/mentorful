@@ -31,12 +31,12 @@ export default async function Home() {
 	console.log(data)
 	return (
 		<main className='py-4 px-48'>
-			<Link className='bg-teal-500 text-black font-medium py-2 px-4 rounded-md' href={'/api/get'}>
-				Go to thfdsae dashboard
+			<Link className='bg-teal-500 text-black font-medium py-2 px-4 rounded-md' href={'/'}>
+				Go to the dashboard
 			</Link>
-			{data.map((post) => (
-				<h1 key='{post.id}'>{post.title}</h1>
-			))}
+            data.map(function(post) {
+                console.log('gh')
+            })
 		</main>
 	)
 }
