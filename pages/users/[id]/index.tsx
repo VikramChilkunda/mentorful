@@ -2,6 +2,9 @@ import Link from 'next/link'
 // import styles from './page.module.css'
 import { useRouter } from 'next/router'
 import prisma from '@/prisma/client'
+import React, { useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 export async function getServerSideProps({ params }) {
     const data = await prisma.user.findFirst({
@@ -9,7 +12,7 @@ export async function getServerSideProps({ params }) {
             id: params.id
         }
     });
-    console.log(data)
+    // console.log(data)
 
     return {
         props: {
@@ -21,7 +24,7 @@ export async function getServerSideProps({ params }) {
 function User(props) {
     const exists = props.user
     if (exists) {
-        return <h1>Username: { props.user.username }</h1>
+        return <h1 id='usernamefjdlaskjfl'>Username: { props.user.username }</h1>
     }
     else {
         return <h1>No User Found</h1>
@@ -64,12 +67,17 @@ function Delete(props) {
     }
 }
 
-
+function MyDateComp() {
+    const [startDate, setStartDate] = useState(new Date());
+    return (
+        <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} />
+    );
+}
 
 export default function Profile({ data }) {
     const router = useRouter()
     const { id } = router.query
-    console.log(data)
+    // console.log(data)
     return (
         <main className='py-4 px-48'>
             <div className='p-30'>
@@ -77,6 +85,7 @@ export default function Profile({ data }) {
                 <Email user={ data } />
                 <Delete user={ data } /> <br />
                 <Link href={ `/users/${id}/edit` }>Edit</Link>
+                <MyDateComp/>
             </div>
         </main>
     )
