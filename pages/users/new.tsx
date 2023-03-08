@@ -1,10 +1,10 @@
 import React, { BaseSyntheticEvent, Component, useState, useEffect } from 'react';
-
-import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
+import { useRouter } from 'next/router'
+// import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import prisma from '@/prisma/client'
 
 export default function Form() {
-	const navigate = useNavigate();
+	const router = useRouter()
 	const [username, setUsername] = useState('');
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
@@ -25,30 +25,31 @@ export default function Form() {
 			const data = {
 				username, email, password
 			};
-		  const response = await fetch("/api/get", {
-			method: "POST",
-			body: JSON.stringify(data),
-		  });
-		  return response.json();
+			const response = await fetch("/api/newUser", {
+				method: "POST",
+				body: JSON.stringify(data),
+			});
+			return response.json();
 		}
 		postData().then((data) => {
-			navigate('/')
+			alert('getting here')
+			router.push('/')
 		})
 		// const data = await newUser();
 	}
 	return (
-		<form onSubmit={handleSubmit}>
+		<form onSubmit={ handleSubmit }>
 			<div>
 				<label htmlFor="username">Username</label>
-				<input type="text" onChange={usernameChange} name="username" id="username" />
+				<input type="text" onChange={ usernameChange } name="username" id="username" />
 			</div>
 			<div>
 				<label htmlFor="email">Email</label>
-				<input type="text" onChange={emailChange} name="email" id="email" />
+				<input type="text" onChange={ emailChange } name="email" id="email" />
 			</div>
 			<div>
 				<label htmlFor="password">Password</label>
-				<input type="text" onChange={passwordChange} name="password" id="password" />
+				<input type="text" onChange={ passwordChange } name="password" id="password" />
 			</div>
 			<button>Submit</button>
 		</form>

@@ -31,7 +31,7 @@ export default async function Home() {
 	console.log(data)
 	return (
 		<main className='py-4 px-48'>
-			<Link className='bg-teal-500 text-black font-medium py-2 px-4 rounded-md' href={'/api/get'}>
+			<Link className='bg-teal-500 text-black font-medium py-2 px-4 rounded-md' href={'/'}>
 				Go to thfdsae dashboard
 			</Link>
 			{data.map((post) => (
