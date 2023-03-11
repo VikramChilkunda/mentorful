@@ -10,6 +10,9 @@ export async function getServerSideProps({ params }) {
     const data = await prisma.user.findFirst({
         where: {
             id: params.id
+        },
+        include: {
+            shift: true
         }
     });
     // console.log(data)
@@ -41,6 +44,19 @@ function Email(props) {
     }
 }
 
+function Shift(props) {
+    const exists = props.user
+    console.log(exists);
+    
+    if(exists) {
+        return <>
+            <h2>Shift from: {exists.shift.from}-{exists.shift.to} on 3/{exists.shift.date}  </h2>
+        </>
+    }   
+    else{
+        return <h2>No User Found</h2>
+    }
+}
 function Delete(props) {
     const router = useRouter()
     const exists = props.user
@@ -74,6 +90,8 @@ function MyDateComp() {
     );
 }
 
+
+
 export default function Profile({ data }) {
     const router = useRouter()
     const { id } = router.query
@@ -84,6 +102,7 @@ export default function Profile({ data }) {
                 <User user={ data } />
                 <Email user={ data } />
                 <Delete user={ data } /> <br />
+                <Shift user={data}></Shift>
                 <Link href={ `/users/${id}/edit` }>Edit</Link>
                 <MyDateComp/>
             </div>

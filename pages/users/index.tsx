@@ -1,9 +1,6 @@
 import Link from 'next/link'
-import '../../app/globals.css'
-// import styles from './page.module.css'
 
 import prisma from '@/prisma/client'
-import type { NextApiRequest, NextApiResponse } from "next";
 
 export async function getStaticProps() {
     const response = await prisma.user.findMany({})

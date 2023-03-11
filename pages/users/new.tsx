@@ -25,7 +25,7 @@ export default function Form() {
 			const data = {
 				username, email, password
 			};
-			const response = await fetch("/api/newUser", {
+			const response = await fetch("/api/users/newUser", {
 				method: "POST",
 				body: JSON.stringify(data),
 			});
