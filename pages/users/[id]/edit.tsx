@@ -59,14 +59,15 @@ export default function Profile({data}) {
 	}
 	return (
 	<main className='py-4 px-48'>
+		
 		<form onSubmit={handleSubmit}>
             <div>
                 <label htmlFor="username">username</label>
-                <input type="text" onChange={usernameChange} defaultValue={data.username}></input>
+                <input type="text" ></input>
             </div>
             <div>
                 <label htmlFor="email">email</label>
-                <input type="text" onChange={emailChange} defaultValue={data.email}></input>
+                <input type="text" ></input>
             </div>
             <div>
                 <label htmlFor="password">password</label>
@@ -74,6 +75,7 @@ export default function Profile({data}) {
             </div>
             <button>Submit</button>
         </form>
+		
 	</main>
 	)
 }

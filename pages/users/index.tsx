@@ -14,6 +14,10 @@ export async function getStaticProps() {
 
 export default function Home({ data }) {
     console.log(data)
+    async function handleSubmit() {
+        const res = await fetch('/api/users/deleteAllUsers');
+        console.log(res);        
+    }
     return (
         <main className='py-4 px-48'>
             <Link className='bg-teal-500 text-black font-medium py-2 px-4 rounded-md' href={'/api/get'}>
@@ -27,6 +31,7 @@ export default function Home({ data }) {
                     </li>
                 )) }
             </ul>
+            <form onSubmit={handleSubmit}><button>Delete All users</button></form>
         </main>
     )
 }

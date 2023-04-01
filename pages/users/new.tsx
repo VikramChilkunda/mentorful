@@ -2,6 +2,7 @@ import React, { BaseSyntheticEvent, Component, useState, useEffect } from 'react
 import { useRouter } from 'next/router'
 // import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import prisma from '@/prisma/client'
+import { toast } from 'react-hot-toast';
 
 export default function Form() {
 	const router = useRouter()
@@ -32,8 +33,7 @@ export default function Form() {
 			return response.json();
 		}
 		postData().then((data) => {
-			alert('getting here')
-			router.push('/')
+			toast.success("Sucessfully signed up!")
 		})
 		// const data = await newUser();
 	}
