@@ -12,8 +12,7 @@ export default  async function deleteAllUsers(req: NextApiRequest, res: NextApiR
                     id: parseInt(id)
                 }
             })
-            toast.success("Succesfully cancelled your shift!")
-            res.status(200).json(resource)
+            res.status(200).send(resource)
             break;
         case 'student':           
             const resource2 = await prisma.shift.update({
@@ -25,10 +24,12 @@ export default  async function deleteAllUsers(req: NextApiRequest, res: NextApiR
                     filled: false
                 }
             })
-            toast.success("Succesfully cancelled your meeting!")
-            res.status(200).json(resource2);
+            console.log('getting here, student case');
+
+            res.status(200).send(resource2)
             break;
         default:
+            console.log('getting here, default case');
             res.status(400)
     }
 

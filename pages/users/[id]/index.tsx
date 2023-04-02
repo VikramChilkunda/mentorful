@@ -6,8 +6,9 @@ import React, { BaseSyntheticEvent, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import toast, { Toaster } from 'react-hot-toast';
+import { log } from 'console';
 
-export async function getServerSideProps({ params }) {
+export async function getStaticProps({ params }) {
     const data = await prisma.user.findFirst({
         where: {
             id: params.id
@@ -25,7 +26,12 @@ export async function getServerSideProps({ params }) {
         }
     }
 }
-
+export async function getStaticPaths() {
+    return {
+        paths: [],
+        fallback: 'blocking'
+    }
+}
 function User(props) {
     const exists = props.user
     if (exists) {
@@ -72,20 +78,21 @@ function Shift(props) {
             id = exists.studentShift.id
             option = 'student'
         }
-        const data = [id, option]
+        const data = [id, option, exists.id]
         
         const userData = async () => {
             const response = await fetch('/api/dates/deleteShift', {
                 method: 'POST',
                 body: JSON.stringify(data)
             })
-            return response.json();
+            
+            return response;
         }
-        userData().then((data) => {
+        userData().then((data) => {            
             if(data.status === 200)
-                toast.success("Sucesfully cancelled your meeting!")
+                toast.success("Successfully cancelled your meeting!")
             else
-                toast("Unable to cancel meeting!")
+                toast.error("Unable to cancel meeting!")
         })
         
     }

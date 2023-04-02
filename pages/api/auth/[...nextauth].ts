@@ -9,20 +9,20 @@ export const authOptions: NextAuthOptions = {
      // Configure one or more authentication providers
      providers: [
         GoogleProvider({
-            clientId: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET
+            clientId: process.env.GOOGLE_CLIENT_ID!,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET!
         }),
         ZoomProvider({
-            clientId: process.env.ZOOM_CLIENT_ID,
-            clientSecret: process.env.ZOOM_CLIENT_SECRET
+            clientId: process.env.ZOOM_CLIENT_ID!,
+            clientSecret: process.env.ZOOM_CLIENT_SECRET!
           })
     ],
     secret: process.env.NEXTAUTH_SECRET,
     callbacks: {
-        async signIn({ user, account, profile, email, credentials }) {
+        async signIn({ user, account, profile}) {
             // console.log(account)
             // console.log(profile)
-            if(account.provider === 'google'){
+            if(account!.provider === 'google'){
                 const data = await prisma.user.findUnique({
                     where: {
                         id: user.id
@@ -35,10 +35,10 @@ export const authOptions: NextAuthOptions = {
                 } else {
                     const data = await prisma.user.create({
                         data: {
-                            username: user.name,
+                            username: user.name!,
                             id: user.id,
-                            email: user.email,
-                            image: user.image,
+                            email: user.email!,
+                            image: user.image!,
                             mentor: false,
                             admin: false
                         }
@@ -47,16 +47,16 @@ export const authOptions: NextAuthOptions = {
                     return true;
                 }
             }
-            else if (account.provider === 'zoom') {
+            else if (account!.provider === 'zoom') {
                 console.log(user);
                 console.log(account);
                 console.log(profile);
                 const data = await prisma.user.update({
                     where: {
-                        email: profile.email
+                        email: profile!.email
                     }, 
                     data: {
-                        personal_meeting_url: profile.personal_meeting_url
+                        personal_meeting_url: profile!.personal_meeting_url
                     }
                 })
                 
@@ -68,7 +68,7 @@ export const authOptions: NextAuthOptions = {
         async session({ session, token, user }) {
             // Send properties to the client, like an access_token and user id from a provider.
             // console.log(token);
-            session.user.id = token.sub
+            session.user!.id = token.sub
             
             
             return session

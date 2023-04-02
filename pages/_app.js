@@ -14,27 +14,32 @@ export default function App({
     pageProps: { session, ...pageProps },
 }) {
     return (
-        <>
-            <SessionProvider session={ session }>
-                <div className="flex flex-col h-screen">
-                    <Header />
-                    <Component { ...pageProps } />
-                    <Toaster
-                        toastOptions={ {
-                            duration: 5000,
-                            success: {
-                                duration: 3000,
-                                theme: {
-                                    primary: 'green',
-                                    secondary: 'black'
-                                }
+        <SessionProvider session={ session }>
+            <div className="flex flex-col h-screen">
+                <Header />
+                <Component { ...pageProps } />
+                <Toaster
+                    toastOptions={ {
+                        duration: 5000,
+                        success: {
+                            duration: 3000,
+                            theme: {
+                                primary: 'green',
+                                secondary: 'black'
                             }
-                        } }
-                    />
-                    <Footer />
-                </div>
-            </SessionProvider>
-        </>
+                        },
+                        error: {
+                            duration: 3000,
+                            theme: {
+                                primary: 'red',
+                                secondary: 'black'
+                            }
+                        }
+                    } }
+                />
+                <Footer />
+            </div>
+        </SessionProvider>
     )
 }
 

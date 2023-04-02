@@ -38,7 +38,6 @@ export default function Profile({data}) {
 		}
 		postData().then((data) => {
             router.push(`/users/${id}`)
-			alert("")
 		})
 	}
 	return (

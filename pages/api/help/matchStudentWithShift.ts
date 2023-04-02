@@ -10,10 +10,13 @@ export default async function getAllDates(req: NextApiRequest, res: NextApiRespo
 
     const userShift = await prisma.shift.findFirst({
         where: {
-            studentId: session.user.id
-        }
+            studentId: session.user.id,
+
+        },
+
     })
         
+    
     //user = user that created the shift
     //session.user = user that wishes to get mentored during that shift
     if(mentorShift && !mentorShift.filled) {  
@@ -34,10 +37,10 @@ export default async function getAllDates(req: NextApiRequest, res: NextApiRespo
             res.send(200).json("Succesfully signed up for a 1-on-1 session!")
         }
         else {
-            res.status(403).json("You already have a 1-on-1 session for this week!")
+            res.status(403).send("You already have a 1-on-1 session for this week!")
         }
     }
     else {
-        res.status(403).json("That person has already found a student to mentor during that shift!")
+        res.status(403).send("That person has already found a student to mentor during that shift!")
     }
 }
