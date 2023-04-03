@@ -18,7 +18,9 @@ export async function getStaticProps({ params }) {
             studentShift: true
         }
     });
-    // console.log(data)
+    console.log(data)
+    console.log(('testing'));
+    
 
     return {
         props: {
@@ -34,10 +36,12 @@ export async function getStaticPaths() {
 }
 function User(props) {
     const exists = props.user
+    console.log(exists);
+    
     if (exists) {
         return <>
             <img src={`${exists.image}`} referrerPolicy='no-referrer' alt="" />
-            <h1 className='max-w-lg text-3xl font-semibold leading-relaxed text-gray-900 dark:text-black' id='usernamefjdlaskjfl'>{ props.user.username }
+            <h1 className='max-w-lg text-3xl font-semibold leading-relaxed text-gray-900 dark:text-black' id='usernamefjdlaskjfl'>Hello, { props.user.username }
                 {exists.mentor && ( 
                     <span className="bg-blue-100 text-blue-800 text-2xl font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-2">MENTOR</span>
                 )}

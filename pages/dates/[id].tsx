@@ -13,7 +13,7 @@ export async function getStaticProps({ params }) {
     })
     const times = await prisma.shift.findMany({
         where: {
-            date: data.date
+            date: data!.date
         },
         include: {
             //only need to include mentors since this page is meant for mentors to sign up
@@ -29,13 +29,13 @@ export async function getStaticProps({ params }) {
 }
 export async function getStaticPaths() {
     var paths = []
-    for(var i = 0; i < 31; i++) {
-        paths[i] = {
-            params: {
-                id: i.toString()
-            }
-        }
-    }
+    // for(var i = 0; i < 31; i++) {
+    //     paths[i] = {
+    //         params: {
+    //             id: i.toString()
+    //         }
+    //     }
+    // }
     return {
         paths: paths,
         fallback: false, // can also be true or 'blocking'
@@ -45,7 +45,8 @@ export async function getStaticPaths() {
 
 export default function Show({ data, times }) {  
     const { data: session } = useSession();
-    // console.log(times);
+    console.log('testing')
+    console.log(times);
     
     async function handleClick(e: BaseSyntheticEvent) { 
         if(session && session.user){
