@@ -9,8 +9,10 @@ export default  async function deleteAllUsers(req: NextApiRequest, res: NextApiR
             id: id
         }
     })
-
-    if(secret === 'infinitepower'){
+    if(user && user.mentor) {
+        res.status(400).send("You already are a mentor!")
+    }
+    if(secret === process.env.MENTOR_SECRET){
         const user = await prisma.user.update({
             where: {
                 id: id,
@@ -19,7 +21,10 @@ export default  async function deleteAllUsers(req: NextApiRequest, res: NextApiR
                 mentor: true
             }
         })
-        res.send(user)
         
+        res.status(200).send(user)   
+    }
+    else {
+        res.status(403).send("Wrong secret key!")
     }
 }

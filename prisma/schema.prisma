@@ -36,14 +36,18 @@ model Date {
   id        Int     @id @default(autoincrement())
   date      Int     @default(autoincrement())
   name      String  @default("")
+  month       Int
   times     Int[]
+  shift     Shift? 
+  lastUpdated   Int 
 }
 
 model Shift {
   id        Int     @id @default(autoincrement())
   from      Int
   to        Int
-  date      Int
+  date      Date    @relation(fields: [dateId], references: [id])
+  dateId    Int     @unique
   
   mentor      User?        @relation("Mentor", fields: [mentorId], references: [id], onDelete: Cascade)
   student     User?       @relation("Student", fields: [studentId], references: [id], onDelete: Cascade)

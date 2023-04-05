@@ -8,7 +8,9 @@ export default async function getAllDates(req: NextApiRequest, res: NextApiRespo
     const foundShift = await prisma.shift.findFirst({
         where: {
             from: time,
-            date: date,
+            date: {
+                date: 2
+            },
             student: null
         }
     })

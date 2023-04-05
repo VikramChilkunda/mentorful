@@ -157,9 +157,9 @@ export default function Home({ shifts }) {
             {
                 (all.length === 0 && 
                 <div className='w-1/2 m-auto'>
-                    <div className="m-auto w-1/2 flex flex-col bg-white justify-center border border-purple-700 rounded-lg shadow md:flex-row hover:bg-gray-100">
+                    <div className="m-auto w-1/2 flex flex-col bg-white/50 mt-5 justify-center border border-purple-700 rounded-lg shadow md:flex-row hover:bg-gray-100">
                         <div className="flex flex-col p-4 leading-normal">
-                            <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900">No Mentors Available</h5>
+                            <h5 className="text-2xl font-bold tracking-tight text-gray-900">No Mentors Available</h5>
                         </div>
                     </div>
                 </div>)

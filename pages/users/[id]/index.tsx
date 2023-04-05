@@ -7,6 +7,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import toast, { Toaster } from 'react-hot-toast';
 import { IconContext } from 'react-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useSession, signOut } from 'next-auth/react';
 
 export async function getServerSideProps({ params }) {
     const data = await prisma.user.findFirst({
@@ -14,8 +15,16 @@ export async function getServerSideProps({ params }) {
             id: params.id
         },
         include: {
-            mentorShift: true,
-            studentShift: true
+            mentorShift: {
+                include: {
+                    date: true
+                }
+            },
+            studentShift: {
+                include: {
+                    date: true
+                }
+            }
         }
     });   
     return {
@@ -87,6 +96,7 @@ function Shift(props) {
 function Delete(props) {
     const router = useRouter()
     const exists = props.user
+    const {data: session} = useSession();
     async function handleSubmit(e: BaseSyntheticEvent) {
         e.preventDefault();
         const userData = async () => {
@@ -95,11 +105,20 @@ function Delete(props) {
                 method: "POST",
                 body: JSON.stringify({id}),
             });
+            if(response.status === 200){
+                toast.success("Succesfully Deleted Account!")
+                signOut({
+                    callbackUrl: '/'
+                })
+            }
+            else if(response.status === 400) {
+                toast.error("Unable to Delete Your Account")
+                
+            }
             return response.json();
         }
-        userData().then((data) => {
-            alert('getting here')
-            router.push('/')
+        userData().then(data => {
+            router.push("/")
         })
     }
 
@@ -125,14 +144,17 @@ function SignUpMentor(props) {
 export default function Profile({ data }) {
     const router = useRouter()
     const { id } = router.query
-    // console.log(data)
+    console.log(data)
+    if(!data) {
+        return <h1>No User Found</h1>
+    }
     return (
         <main className='bg-main bg-cover'>
             {/* <link rel="preconnect" href="https://fonts.googleapis.com">
             <link rel="preconnect" href="https://fonts.gstatic.com">
             <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet"></link> */}
 
-            <section className=" bg-main bg-cover flex font-medium items-center justify-center h-screen w-full">
+            <section className=" bg-black/40 flex font-medium items-center justify-center h-screen w-full">
                 <section className=" mx-auto bg-[#20354b] rounded-2xl px-5 py-5 w-1/3 shadow-lg">
                     <div>
                     <div className="flex items-center justify-between">
@@ -145,7 +167,7 @@ export default function Profile({ data }) {
                         </span>
                     </div>
                     <div className="mt-6 w-fit mx-auto">
-                        <img src={`${data.image}`} className="rounded-full w-28 " alt="profile picture" />
+                        <img src={`${data.image}`} referrerPolicy='no-referrer' className="rounded-full w-28 " alt="profile picture" />
                     </div>
                     </div>
                     <div className='float-left mt-8'>
@@ -162,8 +184,11 @@ export default function Profile({ data }) {
                     <div className='float-right h-full mt-8'>
                             <img src="https://www.iconarchive.com/download/i103365/paomedia/small-n-flat/calendar.1024.png" className='w-10 float-left' alt="" />
                             <p className='text-white font-semibold inline-block ml-5 mt-2'>
-                                {data.mentorShift ? (data.mentorShift.date) : (' ')}
-                                {data.studentShift ? (data.studentShift.date) : (' ')}
+                                {data.mentorShift ? (data.mentorShift.date.name) : (
+                                    (data.studentShift ? (data.studentShift.date) : (
+                                        <h1>No Shift</h1>
+                                    ))
+                                )}
                             </p>
                             {/* <Shift className='float-right' user={data}/> */}
                     </div>

@@ -33,7 +33,7 @@ export const authOptions: NextAuthOptions = {
             const newData = {
                 username: profile.name ?? profile.display_name,
                 email: profile.email,
-                image: profile.image,
+                image: profile.picture,
                 mentor: false,
                 admin: false,
                 personal_meeting_url: account?.provider === "zoom" && profile ? profile.personal_meeting_url : undefined
@@ -49,16 +49,20 @@ export const authOptions: NextAuthOptions = {
             return {user}
         },
         async session({ session, token, user }) {
-            
-            session.user = token.user
-            console.log("Session", session.user)
-            
+            const updatedUser = await prisma.user.findUnique({
+                where: {
+                    id: token.user.id
+                }
+            })
+            if(updatedUser) session.user = updatedUser
+            else session.user = token.user
             return session
         },
     },
     pages: {
         signIn: '/auth/signin',
-    }
+    },
+
 }
 
 export default NextAuth(authOptions)

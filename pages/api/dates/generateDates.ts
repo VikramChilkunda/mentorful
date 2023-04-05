@@ -4,9 +4,27 @@ import toast, { Toaster } from 'react-hot-toast';
 
 export default async function deleteAllUsers(req: NextApiRequest, res: NextApiResponse) {
 	const date = new Date()
-	date.setDate(27)
-	date.setMonth(2)
-	console.log("final results: ", generate(date.getDay(), date))
+	const results = generate(date.getDay(), date)
+	
+	let dates = []
+	const deleted = prisma.date.deleteMany({})
+	for(const result of results) {
+		const addDate = await prisma.date.create({
+			data: {
+				date: result.date,
+				name: result.name,
+				lastUpdated: date.getDate(),
+				times: [
+					8,9,10,11,12,13,14,15,16,17,18,19,20
+				],
+				month: result.month
+			}
+		})
+		dates.push(addDate)
+	}
+	res.status(200).send(dates)
+	
+	
 
 }
 function dateToText(date) {

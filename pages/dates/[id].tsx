@@ -3,11 +3,9 @@ import Link from 'next/link'
 import { BaseSyntheticEvent } from 'react';
 import { useSession, signIn, signOut } from "next-auth/react";
 import { InferGetStaticPropsType } from 'next';
+import { toast } from 'react-hot-toast';
 
 export async function getServerSideProps({ params }) {
-    console.log('getting here to the static props method');
-    console.log(params)
-    console.log('testing testing');
     
     const data = await prisma.date.findFirst({
         where: {
@@ -25,7 +23,7 @@ export async function getServerSideProps({ params }) {
     }
     const times = await prisma.shift.findMany({
         where: {
-            date: data.date
+            dateId: data.id 
         },
         include: {
             //only need to include mentors since this page is meant for mentors to sign up
@@ -50,6 +48,7 @@ export default function Show({ data, times }: InferGetStaticPropsType<typeof get
             const time = parseInt(e.target.outerText.substring(0, 2));
             if(!data) return;
             const date = data.date;
+            // console.log("data.date in [id]", date)
             const passedData = {time, date, session}
             const postData = async () => {
                 const response = await fetch('/api/dates/getShift', {
@@ -57,10 +56,10 @@ export default function Show({ data, times }: InferGetStaticPropsType<typeof get
                     body: JSON.stringify(passedData),
                 });
                 if(response.status === 401) {
-                    alert("You need to be a mentor to do that!")
+                    toast.error("You need to be a mentor to do that!")
                 }
                 else if(response.status === 403) {
-                    alert("You may only sign up for 1 shift per week!")  
+                    toast.error("You may only sign up for 1 shift per week!")
                 }
                 else{
                     return response.json();
@@ -98,19 +97,21 @@ export default function Show({ data, times }: InferGetStaticPropsType<typeof get
     console.log(data)
     return(
         
-        <div className='grid h-max place-items-center gap-y-20'>
-            <h1 className='flex items-center text-5xl font-extrabold mt-10'> 
-                March {data.date}
-            </h1>
-            <div className='flex justify-center items-center h-screen"'>
-                <div className='grid grid-cols-6 gap-5 max-w-[75%] '>
-                    {data.times.map((time, index) => (
-                        <div key={index} onClick={handleClick} className='bg-teal-500 p-5 rounded-md hover:cursor-pointer hover:scale-110 transition ease-in-out '>
-                            <div>
-                                {addTime(time)}
+        <div className='grid place-items-center gap-y-20 bg-main h-screen bg-cover'>
+            <div className='bg-white/10 grid px-10 py-10 gap-y-20 place-items-center'>
+                <h1 className='flex items-center text-5xl font-extrabold mt-10'> 
+                    {data.name.substring(0, data.name.length-2)}
+                </h1>
+                <div className='flex justify-center items-center h-screen"'>
+                    <div className='grid grid-cols-6 gap-5 max-w-[75%] '>
+                        {data.times.map((time, index) => (
+                            <div key={index} onClick={handleClick} className='bg-teal-500 p-5 rounded-md hover:cursor-pointer hover:scale-110 transition ease-in-out '>
+                                <div>
+                                    {addTime(time)}
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>

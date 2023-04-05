@@ -4,7 +4,15 @@ import Link from 'next/link'
 import { useState, useEffect } from 'react'
 export async function getStaticProps() {
     // alert('test')
-    const data = await prisma.date.findMany({})
+    let data = await prisma.date.findMany({})
+    console.log(data)
+    if(!data || Math.abs(data[0].lastUpdated - new Date().getDate()) >= 5) {
+        await fetch('/api/generateDates', {
+            method: "GET"
+        })
+    }
+    data = await prisma.date.findMany({})    
+    
     // console.log(data)
     // const data = [{}]
     return {
@@ -16,16 +24,16 @@ export async function getStaticProps() {
 
 
 export default function TestIndex({ data }) {
-    // console.log(data);
-    
-     // console.log(data);
+    console.log("dates: ", data);
+    const monthDateObj = new Date()
+    monthDateObj.setMonth(data[0].month)
     return (
         <main className='py-4 px-48'>
             <div className="grid grid-cols-7 gap-4">
                 { data.map((date) => (
                     <div key={ date.id } className="mb-2 text-2xl font-bold tracking-tight text-gray-900">
                         <Link href={`/dates/${date.id}`} className="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100">
-                            3/{date.date}
+                            {date.name}
                         </Link>
                     </div>
                 )) }
