@@ -2,18 +2,30 @@ import prisma from '@/prisma/client'
 import Link from 'next/link'
 import { BaseSyntheticEvent } from 'react';
 import { useSession, signIn, signOut } from "next-auth/react";
+import { InferGetStaticPropsType } from 'next';
 
-export async function getStaticProps({ params }) {
+export async function getServerSideProps({ params }) {
     console.log('getting here to the static props method');
+    console.log(params)
+    console.log('testing testing');
     
     const data = await prisma.date.findFirst({
         where: {
             id: parseInt(params.id)
         }
     })
+    
+    // const times = []
+    if(!data){
+        return {
+            props: {
+                data, times: []
+            }
+        }
+    }
     const times = await prisma.shift.findMany({
         where: {
-            date: data!.date
+            date: data.date
         },
         include: {
             //only need to include mentors since this page is meant for mentors to sign up
@@ -21,36 +33,22 @@ export async function getStaticProps({ params }) {
         }
     })
 
+
     return {
         props: {
             data, times
         }
     }
 }
-export async function getStaticPaths() {
-    var paths = []
-    // for(var i = 0; i < 31; i++) {
-    //     paths[i] = {
-    //         params: {
-    //             id: i.toString()
-    //         }
-    //     }
-    // }
-    return {
-        paths: paths,
-        fallback: false, // can also be true or 'blocking'
-      }
-}
 
 
-export default function Show({ data, times }) {  
+export default function Show({ data, times }: InferGetStaticPropsType<typeof getServerSideProps>) {  
     const { data: session } = useSession();
-    console.log('testing')
-    console.log(times);
-    
+   
     async function handleClick(e: BaseSyntheticEvent) { 
         if(session && session.user){
             const time = parseInt(e.target.outerText.substring(0, 2));
+            if(!data) return;
             const date = data.date;
             const passedData = {time, date, session}
             const postData = async () => {
@@ -74,24 +72,30 @@ export default function Show({ data, times }) {
             alert('Need to be signed in')
         }
     }
-    function addTime(time) {
+    function addTime(time: number) {
         
         for(let i = 0; i < times.length; i++){            
+            
             if(time === times[i].from) {
-                
                 return <>
                     <span className='text-black'>
                         {time}:00 - {time+1}:00
                     </span>
                     <div className='text-sm'>
-                        <img referrerPolicy="no-referrer" src={`${times[i].mentor.image}`} className='inline mr-2 relative max-w-[7%] rounded-xl' alt="" />
-                        <span className='text-black'>{`${times[i].mentor.username}`}</span>
+                        <img referrerPolicy="no-referrer" src={`${times[i].mentor?.image}`} className='inline mr-2 relative max-w-[7%] rounded-xl' alt="" />
+                        <span className='text-black'>{`${times[i].mentor?.username}`}</span>
                     </div>
                 </>
             }
         }
         return <span className='text-black'>{time}:00 - {time+1}:00</span>
     }
+    // console.log(data)
+    if(!data) {
+        return <h1>Something Broke!</h1>
+    }
+    
+    console.log(data)
     return(
         
         <div className='grid h-max place-items-center gap-y-20'>
@@ -111,4 +115,5 @@ export default function Show({ data, times }) {
             </div>
         </div>
     )
+    
 }

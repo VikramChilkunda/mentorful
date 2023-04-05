@@ -4,7 +4,9 @@ import prisma from '@/prisma/client'
 
 
 export default async function newUser(req: NextApiRequest, res: NextApiResponse) {
-	const id = req.body;
+	const id = JSON.parse(req.body).id
+
+	
 	const deleteUser = await prisma.user.delete({
 		where: {
 			id: id,

@@ -1,9 +1,11 @@
-import NextAuth from "next-auth"
-import GoogleProvider from "next-auth/providers/google";
+import NextAuth, { Account, User } from "next-auth"
+import GoogleProvider, { GoogleProfile } from "next-auth/providers/google";
 import prisma from '@/prisma/client'
 import type { NextAuthOptions } from 'next-auth'
-import ZoomProvider from "next-auth/providers/zoom"
+import ZoomProvider, { ZoomProfile } from "next-auth/providers/zoom"
 import { log } from "console";
+import { AdapterUser } from "next-auth/adapters";
+import { JWT } from "next-auth/jwt";
 
 export const authOptions: NextAuthOptions = {
      // Configure one or more authentication providers
@@ -19,66 +21,43 @@ export const authOptions: NextAuthOptions = {
     ],
     secret: process.env.NEXTAUTH_SECRET,
     callbacks: {
-        async signIn({ user, account, profile}) {
-            // console.log(account)
-            // console.log(profile)
-            if(account!.provider === 'google'){
-                const data = await prisma.user.findUnique({
-                    where: {
-                        id: user.id
-                    }
-                })
-                if(data){
-                    console.log('existing user: ');
-                    console.log(data);
-                    return true;
-                } else {
-                    const data = await prisma.user.create({
-                        data: {
-                            username: user.name!,
-                            id: user.id,
-                            email: user.email!,
-                            image: user.image!,
-                            mentor: false,
-                            admin: false
-                        }
-                    })     
-                    console.log('creating new user here:');           
-                    return true;
-                }
+        async signIn({ user, account, profile}: {user: User | AdapterUser, account: Account | null, profile?: ZoomProfile | GoogleProfile}) {
+            if(!user.name || !user.email || !user.image || !account)
+                return false;
+            return true;
+        },
+        async jwt({ token, account, profile }: {token: JWT, account: Account | null, profile?: ZoomProfile | GoogleProfile}) {
+            if(!profile) {
+                return token;
             }
-            else if (account!.provider === 'zoom') {
-                console.log(user);
-                console.log(account);
-                console.log(profile);
-                const data = await prisma.user.update({
-                    where: {
-                        email: profile!.email
-                    }, 
-                    data: {
-                        personal_meeting_url: profile!.personal_meeting_url
-                    }
-                })
-                
-                
-                
-                return true;
+            const newData = {
+                username: profile.name ?? profile.display_name,
+                email: profile.email,
+                image: profile.image,
+                mentor: false,
+                admin: false,
+                personal_meeting_url: account?.provider === "zoom" && profile ? profile.personal_meeting_url : undefined
             }
+            const user = await prisma.user.upsert({
+                where: {
+                    email: profile.email
+                },
+                update: newData,
+                create: newData
+                
+            })
+            return {user}
         },
         async session({ session, token, user }) {
-            // Send properties to the client, like an access_token and user id from a provider.
-            // console.log(token);
-            session.user.id = token.sub
             
+            session.user = token.user
+            console.log("Session", session.user)
             
             return session
         },
-        async jwt({ token, account, profile }) {
-            return token
-        }
-        // async zoom() {
-
-        // }
+    },
+    pages: {
+        signIn: '/auth/signin',
     }
 }
 

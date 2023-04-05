@@ -15,7 +15,7 @@ export default function Home() {
                 <div className="flex h-full items-center justify-center">
                     <div className="text-white">
                         <h2 className="mb-4 text-8xl font-semibold">
-                            Mentorful Test
+                            Mentorful
                         </h2>
                         <h4 className="mb-6 text-xl font-semibold">
                             Everyone deserves education

@@ -4,9 +4,8 @@ import Link from 'next/link'
 import { useState, useEffect } from 'react'
 export async function getStaticProps() {
     // alert('test')
-    console.log('getting ehre')
     const data = await prisma.date.findMany({})
-    console.log(data)
+    // console.log(data)
     // const data = [{}]
     return {
         props: {
@@ -17,7 +16,7 @@ export async function getStaticProps() {
 
 
 export default function TestIndex({ data }) {
-    console.log(data);
+    // console.log(data);
     
      // console.log(data);
     return (

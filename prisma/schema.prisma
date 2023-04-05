@@ -12,7 +12,7 @@ datasource db {
 
 model User {
   id        String     @id @default(uuid()) 
-  username  String
+  username  String  
   email     String      @unique
   mentorShift Shift?    @relation("Mentor")
   studentShift Shift?    @relation("Student")
@@ -22,11 +22,20 @@ model User {
   personal_meeting_url String?
 }
 
+model GoogleAccount {
+  google_id     String  @id
+  user_id       String 
+}
 
+model ZoomAccount {
+  zoom_id       String  @id
+  user_id       String 
+}
 
 model Date {
   id        Int     @id @default(autoincrement())
   date      Int     @default(autoincrement())
+  name      String  @default("")
   times     Int[]
 }
 
