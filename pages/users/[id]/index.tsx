@@ -35,7 +35,6 @@ export async function getServerSideProps({ params }) {
 
 }
 
-
 function Shift(props) {
     const exists = props.user
     // console.log(exists);
@@ -142,55 +141,48 @@ function SignUpMentor(props) {
 
 
 export default function Profile({ data }) {
+    const [reloaded, setReloaded] = useState(false)
     const router = useRouter()
+
     const { id } = router.query
-    console.log(data)
+    // console.log(data)
     if(!data) {
         return <h1>No User Found</h1>
     }
     return (
         <main className='bg-main bg-cover'>
-            {/* <link rel="preconnect" href="https://fonts.googleapis.com">
-            <link rel="preconnect" href="https://fonts.gstatic.com">
-            <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet"></link> */}
-
             <section className=" bg-black/40 flex font-medium items-center justify-center h-screen w-full">
                 <section className=" mx-auto bg-[#20354b] rounded-2xl px-5 py-5 w-1/3 shadow-lg">
                     <div>
-                    <div className="flex items-center justify-between">
-                        <span className="text-gray-400 text-sm">
-                            <SignUpMentor user={data} />
-                        </span>
-                        <span className="text-emerald-400">
-                            <Delete user={data}/>
-                            <Link href={ `/users/${id}/edit`} className='inline no-underline text-black bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800'>Edit</Link>
-                        </span>
-                    </div>
-                    <div className="mt-6 w-fit mx-auto">
-                        <img src={`${data.image}`} referrerPolicy='no-referrer' className="rounded-full w-28 " alt="profile picture" />
-                    </div>
+                        <div className="flex items-center justify-between">
+                            <span className="text-gray-400 text-sm">
+                                <SignUpMentor user={data} />
+                            </span>
+                            <span className="text-emerald-400">
+                                <Delete user={data}/>
+                                <Link href={ `/users/${id}/edit`} className='inline no-underline text-black bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800'>Edit</Link>
+                            </span>
+                        </div>
+                        <div className="mt-6 w-fit mx-auto">
+                            <img src={`${data.image}`} referrerPolicy='no-referrer' className="rounded-full w-28 " alt="profile picture" />
+                        </div>
                     </div>
                     <div className='float-left mt-8'>
                         <div>
                             <h2 className="text-white font-bold text-2xl tracking-wide">{data.username}</h2>
                         </div>
-                        <p className="text-emerald-400 font-semibold mt-2.5" >
-                            {data.mentor ? ('Mentor') : ('Student')}
-                        </p>
-                        <p className='text-white font-medium text-md'>
-                            {data.email}
-                        </p>
+                        <p className="text-emerald-400 font-semibold mt-2.5" >{data.mentor ? ('Mentor') : ('Student')}</p>
+                        <p className='text-white font-medium text-md'>{data.email}</p>
                     </div>
                     <div className='float-right h-full mt-8'>
                             <img src="https://www.iconarchive.com/download/i103365/paomedia/small-n-flat/calendar.1024.png" className='w-10 float-left' alt="" />
                             <p className='text-white font-semibold inline-block ml-5 mt-2'>
                                 {data.mentorShift ? (data.mentorShift.date.name) : (
-                                    (data.studentShift ? (data.studentShift.date) : (
-                                        <h1>No Shift</h1>
+                                    (data.studentShift ? (data.studentShift.date.name) : (
+                                        "No Shift"
                                     ))
                                 )}
                             </p>
-                            {/* <Shift className='float-right' user={data}/> */}
                     </div>
                 </section>
             </section>
