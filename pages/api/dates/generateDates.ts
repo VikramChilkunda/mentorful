@@ -7,7 +7,10 @@ export default async function deleteAllUsers(req: NextApiRequest, res: NextApiRe
 	const results = generate(date.getDay(), date)
 	
 	let dates = []
-	const deleted = prisma.date.deleteMany({})
+	const deletedShifts = await prisma.shift.deleteMany({})
+	const deletedDates = await prisma.date.deleteMany({})
+	console.log("deleted dates: ", deletedDates)
+	console.log("deleted shifts: ", deletedShifts)
 	for(const result of results) {
 		const addDate = await prisma.date.create({
 			data: {

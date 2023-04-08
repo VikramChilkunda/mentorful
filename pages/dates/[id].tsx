@@ -7,48 +7,36 @@ import { toast } from 'react-hot-toast';
 
 export async function getServerSideProps({ params }) {
     
-    const data = await prisma.date.findFirst({
+    const paramDate = await prisma.date.findFirst({
         where: {
             id: parseInt(params.id)
+        },
+        include: {
+            shifts: {
+                include: {
+                    mentor: true
+                }
+            }
         }
     })
     
-    // const times = []
-    if(!data){
-        return {
-            props: {
-                data, times: []
-            }
-        }
-    }
-    const times = await prisma.shift.findMany({
-        where: {
-            dateId: data.id 
-        },
-        include: {
-            //only need to include mentors since this page is meant for mentors to sign up
-            mentor: true
-        }
-    })
-
-
     return {
         props: {
-            data, times
+            paramDate
         }
     }
 }
 
 
-export default function Show({ data, times }: InferGetStaticPropsType<typeof getServerSideProps>) {  
+export default function Show({ paramDate }: InferGetStaticPropsType<typeof getServerSideProps>) {  
     const { data: session } = useSession();
-   
+    console.log(paramDate)
+   if(!paramDate) return <h1>Something Broke</h1>
     async function handleClick(e: BaseSyntheticEvent) { 
         if(session && session.user){
             const time = parseInt(e.target.outerText.substring(0, 2));
-            if(!data) return;
-            const date = data.date;
-            // console.log("data.date in [id]", date)
+            if(!paramDate) return;
+            const date = paramDate;
             const passedData = {time, date, session}
             const postData = async () => {
                 const response = await fetch('/api/dates/getShift', {
@@ -61,8 +49,9 @@ export default function Show({ data, times }: InferGetStaticPropsType<typeof get
                 else if(response.status === 403) {
                     toast.error("You may only sign up for 1 shift per week!")
                 }
-                else{
-                    return response.json();
+                else if(response.status === 201){
+                    location.reload()
+                    toast.success("Succesfully signed up for that shift!")
                 }
             }
             postData()
@@ -72,45 +61,42 @@ export default function Show({ data, times }: InferGetStaticPropsType<typeof get
         }
     }
     function addTime(time: number) {
-        
-        for(let i = 0; i < times.length; i++){            
-            
-            if(time === times[i].from) {
+        const shifts = paramDate.shifts
+        for(let i = 0; paramDate  && i < paramDate.times.length; i++){ 
+            const i = shifts.findIndex(e => e.from === time);
+            if (i > -1) {
                 return <>
                     <span className='text-black'>
                         {time}:00 - {time+1}:00
                     </span>
                     <div className='text-sm'>
-                        <img referrerPolicy="no-referrer" src={`${times[i].mentor?.image}`} className='inline mr-2 relative max-w-[7%] rounded-xl' alt="" />
-                        <span className='text-black'>{`${times[i].mentor?.username}`}</span>
+                        <img referrerPolicy="no-referrer" src={`${shifts[i].mentor?.image}`} className='inline mr-2 relative max-w-[7%] rounded-xl' alt="" />
+                        <span className='text-black'>{`${shifts[i].mentor?.username}`}</span>
                     </div>
                 </>
-            }
+            }  
         }
         return <span className='text-black'>{time}:00 - {time+1}:00</span>
     }
-    // console.log(data)
-    if(!data) {
-        return <h1>Something Broke!</h1>
-    }
     
-    console.log(data)
     return(
         
-        <div className='grid place-items-center gap-y-20 bg-main h-screen bg-cover'>
-            <div className='bg-white/10 grid px-10 py-10 gap-y-20 place-items-center'>
-                <h1 className='flex items-center text-5xl font-extrabold mt-10'> 
-                    {data.name.substring(0, data.name.length-2)}
-                </h1>
-                <div className='flex justify-center items-center h-screen"'>
-                    <div className='grid grid-cols-6 gap-5 max-w-[75%] '>
-                        {data.times.map((time, index) => (
-                            <div key={index} onClick={handleClick} className='bg-teal-500 p-5 rounded-md hover:cursor-pointer hover:scale-110 transition ease-in-out '>
-                                <div>
-                                    {addTime(time)}
+        <div className='bg-main h-screen bg-cover'>
+            <div className='grid place-items-center gap-y-20 h-screen bg-black/40'>
+                <div className=' grid px-10 py-10 gap-y-20 place-items-center'>
+                    <h1 className='flex items-center text-5xl text-white font-extrabold mt-10'> 
+                        {paramDate.name.substring(0, paramDate.name.length-2)}
+                    </h1>
+                    <div className='flex justify-center items-center h-screen"'>
+                        <div className='grid grid-cols-6 gap-5 max-w-[75%] '>
+                            {paramDate.times.map((time, index) => (
+                                <div key={index} onClick={handleClick} className='bg-teal-500 p-5 rounded-md hover:cursor-pointer hover:scale-110 transition ease-in-out '>
+                                    <div>
+                                        {addTime(time)}
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>

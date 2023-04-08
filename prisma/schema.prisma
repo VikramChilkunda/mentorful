@@ -18,6 +18,7 @@ model User {
   studentShift Shift?    @relation("Student")
   image     String      @default("https://cdn-icons-png.flaticon.com/512/6522/6522516.png")
   mentor    Boolean     @default(false)
+  subjects  String[]    
   admin     Boolean     @default(false)
   personal_meeting_url String?
 }
@@ -38,7 +39,7 @@ model Date {
   name      String  @default("")
   month       Int
   times     Int[]
-  shift     Shift? 
+  shifts     Shift[]
   lastUpdated   Int 
 }
 
@@ -47,7 +48,7 @@ model Shift {
   from      Int
   to        Int
   date      Date    @relation(fields: [dateId], references: [id])
-  dateId    Int     @unique
+  dateId    Int
   
   mentor      User?        @relation("Mentor", fields: [mentorId], references: [id], onDelete: Cascade)
   student     User?       @relation("Student", fields: [studentId], references: [id], onDelete: Cascade)

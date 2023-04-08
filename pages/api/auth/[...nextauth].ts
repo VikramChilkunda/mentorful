@@ -26,7 +26,8 @@ export const authOptions: NextAuthOptions = {
                 return false;
             return true;
         },
-        async jwt({ token, account, profile }: {token: JWT, account: Account | null, profile?: ZoomProfile | GoogleProfile}) {
+        async jwt({ token, account, profile, trigger }: {token: JWT, account: Account | null, profile?: ZoomProfile | GoogleProfile}) {
+            
             if(!profile) {
                 return token;
             }
@@ -52,10 +53,15 @@ export const authOptions: NextAuthOptions = {
             const updatedUser = await prisma.user.findUnique({
                 where: {
                     id: token.user.id
+                },
+                include: {
+                    studentShift: true,
+                    mentorShift: true
                 }
             })
             if(updatedUser) session.user = updatedUser
             else session.user = token.user
+            console.log("setting session here: ", session)
             return session
         },
     },

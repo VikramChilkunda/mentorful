@@ -8,9 +8,10 @@ import toast, { Toaster } from 'react-hot-toast';
 import { IconContext } from 'react-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useSession, signOut } from 'next-auth/react';
+import { timeToText } from '@/utils/timeToString';
 
 export async function getServerSideProps({ params }) {
-    const data = await prisma.user.findFirst({
+    const foundUser = await prisma.user.findFirst({
         where: {
             id: params.id
         },
@@ -29,14 +30,15 @@ export async function getServerSideProps({ params }) {
     });   
     return {
         props: {
-            data
+            foundUser
         }
     }
 
 }
 
-function Shift(props) {
+function Shift(props: User) {
     const exists = props.user
+    const router = useRouter()
     // console.log(exists);
     async function handleSubmit(e: BaseSyntheticEvent) {
         e.preventDefault();
@@ -61,37 +63,37 @@ function Shift(props) {
             return response;
         }
         userData().then((data) => {            
-            if(data.status === 200)
-                toast.success("Successfully cancelled your meeting!")
+            if(data.status === 200){
+                toast.success("Succesfully cancelled your meeting!")
+                router.push(`/users/${exists.id}`)
+            }
             else
                 toast.error("Unable to cancel meeting!")
         })
         
     }
-    
     if(exists) {
         if(exists.mentorShift) {
-            return <>
-                        <h2 className='text-white font-medium ml-5'>Shift from: {exists.mentorShift.from}-{exists.mentorShift.to} on 3/{exists.mentorShift.date}  </h2>
-                        <form onSubmit={handleSubmit}><button>Cancel Appointment</button></form>
-                    </>
+            return <div className='flex flex-col ml-2 items-end'>
+                        <h2 className='font-semibold inline-block text-yellow-400'>{timeToText(exists.mentorShift.from)} - {timeToText(exists.mentorShift.to)} on {exists.mentorShift.date.month+1  }/{exists.mentorShift.date.date}</h2>
+                        <button className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-3 py-2 mt-1  dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900" onClick={handleSubmit}>Cancel</button>
+                    </div>
         }
         else if(exists.studentShift) {
-            return <>
-                <h2 className='text-white font-medium ml-5'>Meeting from: {exists.studentShift.from}-{exists.studentShift.to} on 3/{exists.studentShift.date}  </h2>
-                <form onSubmit={handleSubmit}><button>Cancel Appointment</button></form>
-            </>
+            return <div className='flex flex-col ml-2 items-end'>
+                <h2 className=' font-semibold text-yellow-400'>{timeToText(exists.studentShift.from)} - {timeToText(exists.studentShift.to)} on {exists.studentShift.date.month+1}/{exists.studentShift.date.date}</h2>
+                <button className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-3 py-2 mt-1  dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900" onClick={handleSubmit}>Cancel</button>
+            </div>
         }
         else {
-            return <h2>Not currently signed up for a shift</h2>
-            
-        }
-        
+            return <h2 className='font-medium text-red-500'>Not registered for a meeting</h2>  
+        } 
     }   
     else{
-        return <h2>Not currently signed up for a shift</h2>
+        return <h2 className='font-medium text-red-500'>Not registered for a meeting</h2>
     }
 }
+
 function Delete(props) {
     const router = useRouter()
     const exists = props.user
@@ -111,21 +113,19 @@ function Delete(props) {
                 })
             }
             else if(response.status === 400) {
-                toast.error("Unable to Delete Your Account")
-                
+                toast.error("Unable to Delete Your Account")   
             }
-            return response.json();
         }
         userData().then(data => {
             router.push("/")
         })
     }
 
-    if (exists) {
+    if (exists && session?.user.id === exists.id) {
         return (<button onClick={handleSubmit} className="focus:outline-none text-black bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-2.5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Delete</button>)
     }
     else {
-        return <h1>No User Found</h1>
+        return <></>
     }
     
 }
@@ -138,55 +138,151 @@ function SignUpMentor(props) {
         </a> )
     )
 }
-
-
-export default function Profile({ data }) {
-    const [reloaded, setReloaded] = useState(false)
-    const router = useRouter()
-
-    const { id } = router.query
-    // console.log(data)
-    if(!data) {
-        return <h1>No User Found</h1>
-    }
-    return (
-        <main className='bg-main bg-cover'>
-            <section className=" bg-black/40 flex font-medium items-center justify-center h-screen w-full">
-                <section className=" mx-auto bg-[#20354b] rounded-2xl px-5 py-5 w-1/3 shadow-lg">
-                    <div>
-                        <div className="flex items-center justify-between">
-                            <span className="text-gray-400 text-sm">
-                                <SignUpMentor user={data} />
-                            </span>
-                            <span className="text-emerald-400">
-                                <Delete user={data}/>
-                                <Link href={ `/users/${id}/edit`} className='inline no-underline text-black bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800'>Edit</Link>
-                            </span>
-                        </div>
-                        <div className="mt-6 w-fit mx-auto">
-                            <img src={`${data.image}`} referrerPolicy='no-referrer' className="rounded-full w-28 " alt="profile picture" />
-                        </div>
+//for when the logged in user is viewing their own profile
+function ProfileIfLoggedUser (user, id) {
+    const data = user.user
+    return(
+    <main className='bg-main bg-cover'>
+        <section className=" bg-black/40 flex font-medium items-center justify-center h-screen w-full">
+            <section className=" mx-auto bg-[#20354b] rounded-2xl p-9 w-1/3 shadow-lg relative">
+                <div>
+                    <div className="flex flex-row-reverse items-baseline ml-auto">
+                        {data.subjects.length? (
+                            <ul>
+                                {data.subjects.map((subject: string) => (
+                                    <li className='text-md text-white uppercase font-semibold'>{subject}</li>
+                                ))}
+                            </ul>
+                        ): (
+                            <></>
+                        )}
+                        
+                        <span className="text-emerald-400">
+                            <Delete user={data}/>
+                            {data.mentor? (
+                                <Link href={ `/users/${data.id}/edit`} className='inline no-underline text-black bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800'>Edit</Link> 
+                            ): (
+                                <></>
+                            )}
+                            
+                        </span>
                     </div>
-                    <div className='float-left mt-8'>
+                    <div className="mt-6 w-fit mx-auto">
+                        <img src={`${data.image}`} referrerPolicy='no-referrer' className="rounded-full w-28 " alt="profile picture" />
+                    </div>
+                </div>
+                <div className='flex w-full mt-8 justify-start items-end'>
+                    <div>
                         <div>
                             <h2 className="text-white font-bold text-2xl tracking-wide">{data.username}</h2>
                         </div>
                         <p className="text-emerald-400 font-semibold mt-2.5" >{data.mentor ? ('Mentor') : ('Student')}</p>
                         <p className='text-white font-medium text-md'>{data.email}</p>
                     </div>
-                    <div className='float-right h-full mt-8'>
-                            <img src="https://www.iconarchive.com/download/i103365/paomedia/small-n-flat/calendar.1024.png" className='w-10 float-left' alt="" />
-                            <p className='text-white font-semibold inline-block ml-5 mt-2'>
-                                {data.mentorShift ? (data.mentorShift.date.name) : (
-                                    (data.studentShift ? (data.studentShift.date.name) : (
-                                        "No Shift"
-                                    ))
-                                )}
-                            </p>
+                    <div className='flex relative w-fit mt-auto ml-auto items-center h-fit'>
+                        {/* <img src="https://www.iconarchive.com/download/i103365/paomedia/small-n-flat/calendar.1024.png" className='w-10 h-10' alt="" /> */}
+                        <Shift user={data} />
                     </div>
-                </section>
+                </div>
             </section>
-        </main>
+        </section>
+    </main>
     )
+}
+
+//for when the logged in user is viewing someone else's profile
+function ProfileIfDiffUser(user, id) {
+    const data = user.user
+    console.log("different user, : ", data)
+    if(!data) return <></>
+    if(data.mentor) {
+        return(
+            <main className='bg-main bg-cover'>
+                <section className=" bg-black/40 flex font-medium items-center justify-center h-screen w-full">
+                    <section className=" mx-auto bg-[#20354b] rounded-2xl p-9 w-1/3 shadow-lg">
+                        <div className='flex'>
+                            <span>
+                                <div className=" w-1/2 ">
+                                    <img src={`${data.image}`} referrerPolicy='no-referrer' className="rounded-full w-28 " alt="profile picture" />
+                                </div>
+                                <div className='float-left mt-8'>
+                                    <div>
+                                        <h2 className="text-white font-bold text-2xl tracking-wide">{data.username}</h2>
+                                    </div>
+                                    <p className="text-emerald-400 font-semibold mt-2.5" >{data.mentor ? ('Mentor') : ('Student')}</p>
+                                    <p className='text-white font-medium text-md'>{data.email}</p>
+                                </div>
+                            </span>
+                            <div className='flex flex-col ml-auto max-w-[40%]'>
+                                <div className="ml-auto text-end">
+                                    {data?.subjects.length? (
+                                        <ul>
+                                            {data.subjects.map((subject: string) => (
+                                                <li className='text-md text-white uppercase font-semibold'>{subject}</li>
+                                            ))}
+                                        </ul>
+                                    ): (
+                                        <p className='text-white font-semibold text-xl'>
+                                            This mentor currently has no subjects selected.
+                                        </p>
+                                    )}
+                                </div>
+                                <div className='flex relative w-fit mt-auto ml-auto items-center h-fit'>
+                                    <img src="https://www.iconarchive.com/download/i103365/paomedia/small-n-flat/calendar.1024.png" className='w-10 float-left' alt="" />
+                                    <p className='text-white font-semibold inline-block ml-5'>
+                                        {data.mentorShift ? (data.mentorShift.date.name) : (
+                                            (data.studentShift ? (data.studentShift.date.name) : (
+                                                "No Shift"
+                                            ))
+                                        )}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        
+                    </section>
+                </section>
+            </main>)
+    }
+    else{
+        return(
+            <main className='bg-main bg-cover'>
+                <section className=" bg-black/40 flex font-medium items-center justify-center h-screen w-full">
+                    <section className=" mx-auto bg-[#20354b] rounded-2xl p-8 w-fit shadow-lg">
+                        <div className='flex'>
+                            <span>
+                                <div className="mt-6 w-1/2 m-auto">
+                                    <img src={`${data.image}`} referrerPolicy='no-referrer' className="rounded-full w-28 " alt="profile picture" />
+                                </div>
+                                <div className='float-left mt-8'>
+                                    <div>
+                                        <h2 className="text-white font-bold text-2xl tracking-wide">{data.username}</h2>
+                                    </div>
+                                    <p className="text-emerald-400 font-semibold mt-2.5" >{data.mentor ? ('Mentor') : ('Student')}</p>
+                                    <p className='text-white font-medium text-md'>{data.email}</p>
+                                </div>
+                            </span>
+                        </div>
+                    </section>
+                </section>
+            </main>
+    )}
+    
+}
+
+export default function Profile({ foundUser }) {
+    const router = useRouter()
+    const {data: session} = useSession();
+    const { id } = router.query
+    if(!foundUser) {
+        return <h1>No User Found</h1>
+    }
+    if(id === session?.user.id) {
+        return <ProfileIfLoggedUser user={foundUser} id={id} />
+    }
+    else {
+        return <ProfileIfDiffUser user={foundUser} id={id} />
+    }
 }
 

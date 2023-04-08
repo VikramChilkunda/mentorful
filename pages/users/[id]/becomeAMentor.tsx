@@ -40,9 +40,7 @@ export default function Profile({ user }) {
 				body: JSON.stringify(data),
 			});
 			if (response.status === 200) {
-				toast.success("You are now a mentor! Please sign in again for the update to take effect.")
-				setTimeout(() => {signOut()}, 3000)
-				
+				toast.success("You are now a mentor! Please sign in again for the update to take effect.")				
 			}
 			else if (response.status === 400) {
 				toast.error("You already are a mentor!")
