@@ -24,12 +24,12 @@ export default  async function deleteAllUsers(req: NextApiRequest, res: NextApiR
                     filled: false
                 }
             })
-            console.log('getting here, student case');
+            // console.log('getting here, student case');
 
             res.status(200).send(resource2)
             break;
         default:
-            console.log('getting here, default case');
+            // console.log('getting here, default case');
             res.status(400)
     }
 

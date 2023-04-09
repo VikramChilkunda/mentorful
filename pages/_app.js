@@ -11,10 +11,16 @@ export default function App({
     Component,
     pageProps: { session, ...pageProps },
 }) {
+    
     return (
         <>
             <Head>
                 <link rel="shortcut icon" href='/Logo Icon (1).png' />
+                {pageProps.title ? (
+                    <title>{pageProps.title}</title>
+                ) : (
+                    <title>Mentorful</title>
+                )}
             </Head>
             <SessionProvider session={ session }>
                 <div className="flex flex-col h-screen">
@@ -62,6 +68,7 @@ function SpecialLink(props) {
 }
 const Header = ({serverSession}) => {
     const { data: session, status } = useSession();
+    // console.log("the status of authentication is: ", status)
     if(status != "loading"){
         // console.log(session.user)
         return (

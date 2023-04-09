@@ -9,8 +9,8 @@ export default async function deleteAllUsers(req: NextApiRequest, res: NextApiRe
 	let dates = []
 	const deletedShifts = await prisma.shift.deleteMany({})
 	const deletedDates = await prisma.date.deleteMany({})
-	console.log("deleted dates: ", deletedDates)
-	console.log("deleted shifts: ", deletedShifts)
+	// console.log("deleted dates: ", deletedDates)
+	// console.log("deleted shifts: ", deletedShifts)
 	for(const result of results) {
 		const addDate = await prisma.date.create({
 			data: {
@@ -37,20 +37,20 @@ function dateToText(date) {
 	if (date >= 4 && date <= 20 || date >= 24 && date <= 30) return `${date}th`
 }
 function generate(displacement, date) {
-	console.log("date input: ", date)
-	console.log("displacement: ", displacement)
+	// console.log("date input: ", date)
+	// console.log("displacement: ", displacement)
 	//displacement = days since sunday
 	const month = date.getMonth();
-	console.log("month", month)
+	// console.log("month", month)
 
 	let dates = []
 	let counter = 0
 	const daysInMonth = (year, month) => new Date(year, month+1, 0).getDate();
 	const year = date.getFullYear()
 	const numDaysPrevMonth = daysInMonth(year, month - 1)
-	console.log("number of days in the previous month: ", numDaysPrevMonth)
+	// console.log("number of days in the previous month: ", numDaysPrevMonth)
 	const numDaysCurrMonth = daysInMonth(year, month)
-	console.log("number of days in the current month: ", numDaysCurrMonth)
+	// console.log("number of days in the current month: ", numDaysCurrMonth)
 
 	if(date.getDate() - displacement <= 0){
 		for (let i = displacement; date.getDate() - i <= 0 && counter < 7; i--, counter++) {

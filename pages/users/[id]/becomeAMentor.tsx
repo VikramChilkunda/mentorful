@@ -12,9 +12,10 @@ export async function getServerSideProps({ params }) {
 			id: params.id
 		}
 	});
+	let title = 'Become a Mentor'
 	return {
 		props: {
-			user
+			user, title
 		}
 	}
 }
@@ -37,9 +38,10 @@ export default function Profile({ user }) {
 			const response = await fetch("/api/users/becomeMentor", {
 				method: "POST",
 				body: JSON.stringify(data),
-			});
+			});			
 			if (response.status === 200) {
-				toast.success("You are now a mentor!")				
+				toast.success("You are now a mentor!")
+
 			}
 			else if (response.status === 400) {
 				toast.error("You already are a mentor!")
@@ -50,15 +52,15 @@ export default function Profile({ user }) {
 			return response.json();
 		}
 		postData().then((data) => {
-			router.push(`/users/${id}`)
+			location.assign(`/users/${id}`)
 		})
 	}
 	if(session?.user.id === id) {
 		if(session?.user.personal_meeting_url) {
 			return (
 				<main className='bg-main bg-cover '>
-					<div className='bg-black/40 content-center h-screen flex flex-col px-48 '>
-						<div className=' m-auto w-2/3 justify-center p-10'>
+					<div className='bg-black/40 content-center h-screen flex flex-col md:px-48'>
+						<div className=' m-auto w-full xl:w-2/3 justify-center p-10'>
 							<h1 className="font-semibold text-3xl mb-5 text-white">Please enter the secret key to become a mentor: </h1>
 							<form onSubmit={ handleSubmit } className=''>
 								<div className="relative z-0 w-full mb-6 group ">

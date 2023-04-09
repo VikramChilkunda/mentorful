@@ -3,11 +3,9 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 export default  async function deleteAllUsers(req: NextApiRequest, res: NextApiResponse) {
     const {secret, id} = JSON.parse(req.body)
-       
+    console.log("searching by id: ", id)
     const user = await prisma.user.findUnique({
-        where: {
-            id: id
-        }
+        where: {id}
     })
     if(user && user.mentor) {
         res.status(400).send("You already are a mentor!")

@@ -23,18 +23,18 @@ export const authOptions: NextAuthOptions = {
     callbacks: {
         async signIn({ user, account, profile}: {user: User | AdapterUser, account: Account | null, profile?: ZoomProfile | GoogleProfile}) {
             if(!user.name || !user.email || !user.image || !account)
-                return false;
+            return false;
             return true;
         },
         async jwt({ token, account, profile, trigger }: {token: JWT, account: Account | null, profile?: ZoomProfile | GoogleProfile}) {
-            
             if(!profile) {
                 return token;
             }
+            console.log("profile received: ", profile)
             const newData = {
                 username: profile.name ?? profile.display_name,
                 email: profile.email,
-                image: profile.picture,
+                image: profile.picture || profile.pic_url,
                 mentor: false,
                 admin: false,
                 personal_meeting_url: account?.provider === "zoom" && profile ? profile.personal_meeting_url : undefined
@@ -59,6 +59,7 @@ export const authOptions: NextAuthOptions = {
                     mentorShift: true
                 }
             })
+            // console.log("finishes the prism call in the session method")
             if(updatedUser) session.user = updatedUser
             else session.user = token.user
             console.log("setting session here: ", session)

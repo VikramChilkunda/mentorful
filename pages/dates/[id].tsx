@@ -4,6 +4,7 @@ import { BaseSyntheticEvent } from 'react';
 import { useSession, signIn, signOut } from "next-auth/react";
 import { InferGetStaticPropsType } from 'next';
 import { toast } from 'react-hot-toast';
+import Head from 'next/head';
 
 export async function getServerSideProps({ params }) {
     
@@ -19,10 +20,11 @@ export async function getServerSideProps({ params }) {
             }
         }
     })
+    let title = `${paramDate?.name}`
     
     return {
         props: {
-            paramDate
+            paramDate, title
         }
     }
 }
@@ -80,27 +82,31 @@ export default function Show({ paramDate }: InferGetStaticPropsType<typeof getSe
     }
     
     return(
-        
-        <div className='bg-main h-screen bg-cover'>
-            <div className='grid place-items-center gap-y-20 h-screen bg-black/40'>
-                <div className=' grid px-10 py-10 gap-y-20 place-items-center'>
-                    <h1 className='flex items-center text-5xl text-white font-extrabold mt-10'> 
-                        {paramDate.name.substring(0, paramDate.name.length-2)}
-                    </h1>
-                    <div className='flex justify-center items-center h-screen"'>
-                        <div className='grid grid-cols-6 gap-5 max-w-[75%] '>
-                            {paramDate.times.map((time, index) => (
-                                <div key={index} onClick={handleClick} className='bg-teal-500 p-5 rounded-md hover:cursor-pointer hover:scale-110 transition ease-in-out '>
-                                    <div>
-                                        {addTime(time)}
+        <>
+            <Head>
+                <title>{paramDate.name}</title>
+            </Head>
+            <div className='bg-main bg-cover h-fit md:h-screen'>
+                <div className='grid place-items-center gap-y-20 h-fit bg-black/40 md:h-screen'>
+                    <div className=' grid px-10 py-10 gap-y-20 place-items-center'>
+                        <h1 className='flex items-center text-5xl text-white font-extrabold mt-10'> 
+                            {paramDate.name.substring(0, paramDate.name.length-2)}
+                        </h1>
+                        <div className='flex justify-center items-center h-screen"'>
+                            <div className='grid grid-cols-1 md:grid-cols-3 xl:grid-cols-6 gap-5 max-w-[75%] '>
+                                {paramDate.times.map((time, index) => (
+                                    <div key={index} onClick={handleClick} className='bg-teal-500 p-5 rounded-md hover:cursor-pointer hover:scale-110 transition ease-in-out '>
+                                        <div>
+                                            {addTime(time)}
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     )
     
 }

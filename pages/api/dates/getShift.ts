@@ -12,7 +12,7 @@ export default async function getAllDates(req: NextApiRequest, res: NextApiRespo
             dateId: date.id
         }
     })
-    console.log("shift was found: ", foundShift)
+    // console.log("shift was found: ", foundShift)
     if(foundShift){
         res.send(foundShift)
     }
@@ -44,7 +44,7 @@ export default async function getAllDates(req: NextApiRequest, res: NextApiRespo
                     }
                 }
             })
-            console.log("updated user: ", getUser)
+            // console.log("updated user: ", getUser)
             // const updatedUser = await prisma.user.findUnique({
             //     where: {
             //         id: session.user.id

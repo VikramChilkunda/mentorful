@@ -28,9 +28,10 @@ export async function getServerSideProps({ params }) {
             }
         }
     });   
+    let title = `Profile - ${foundUser?.username}`
     return {
         props: {
-            foundUser
+            foundUser, title
         }
     }
 
@@ -161,9 +162,9 @@ function ProfileIfLoggedUser ({user, id}) {
     return(
     <main className='bg-main bg-cover'>
         <section className=" bg-black/40 flex font-medium items-center justify-center h-screen w-full">
-            <section className=" mx-auto bg-[#20354b] rounded-2xl p-9 w-1/3 shadow-lg relative">
+            <section className=" mx-auto bg-[#20354b] rounded-2xl p-9 lg:w-1/2 2xl:w-1/3 md:w-1/2 w-5/6 shadow-lg relative">
                 <div>
-                    <div className="flex flex-row-reverse items-baseline ml-auto">
+                    <div className="flex justify-between items-baseline ml-auto">
                         {data.subjects?.length? (
                             <ul>
                                 {data.subjects.map((subject: string) => (
@@ -171,7 +172,7 @@ function ProfileIfLoggedUser ({user, id}) {
                                 ))}
                             </ul>
                         ): (
-                            <></>
+                            <span></span>
                         )}
                         
                         <span className="text-emerald-400">
@@ -188,7 +189,7 @@ function ProfileIfLoggedUser ({user, id}) {
                         <img src={`${data.image}`} referrerPolicy='no-referrer' className="rounded-full w-28 " alt="profile picture" />
                     </div>
                 </div>
-                <div className='flex w-full mt-8 justify-start items-end'>
+                <div className='flex md:flex-row flex-col w-full mt-8 justify-start items-center text-center md:text-left'>
                     <div>
                         <div>
                             <h2 className="text-white font-bold text-2xl tracking-wide">{data.username}</h2>
@@ -196,12 +197,12 @@ function ProfileIfLoggedUser ({user, id}) {
                         <p className="text-emerald-400 font-semibold mt-2.5" >{data.mentor ? ('Mentor') : ('Student')}</p>
                         <p className='text-white font-medium text-md'>{data.email}</p>
                         {data.mentor && data.personal_meeting_url ? (
-                            <a href={`${data.personal_meeting_url}`} target='_blank' className='text-blue-300 underline font-medium text-md'>{data.personal_meeting_url.substring(0, Math.max(10, data.email.length))} . . .</a>
+                            <a href={`${data.personal_meeting_url}`} target='_blank' className='text-blue-300 underline font-medium text-md'>{data.personal_meeting_url.substring(0, Math.max(10, data.email.length))} ...</a>
                         ) : (
                             <></>
                         )}
                     </div>
-                    <div className='flex relative w-fit mt-auto ml-auto items-center h-fit'>
+                    <div className='flex relative w-fit mt-auto md:ml-auto h-fit text-right'>
                         {/* <img src="https://www.iconarchive.com/download/i103365/paomedia/small-n-flat/calendar.1024.png" className='w-10 h-10' alt="" /> */}
                         <Shift user={data} />
                     </div>
@@ -220,7 +221,7 @@ function ProfileIfDiffUser({user, id, loggedUser}) {
         return(
             <main className='bg-main bg-cover'>
                 <section className=" bg-black/40 flex font-medium items-center justify-center h-screen w-full">
-                    <section className=" mx-auto bg-[#20354b] rounded-2xl p-9 w-1/3 shadow-lg">
+                    <section className=" mx-auto bg-[#20354b] rounded-2xl p-9 w-5/6 md:w-1/3 sm:w-1/2 shadow-lg">
                         <div className='flex'>
                             <span>
                                 <div className=" w-1/2 ">
@@ -233,11 +234,9 @@ function ProfileIfDiffUser({user, id, loggedUser}) {
                                     <p className="text-emerald-400 font-semibold mt-2.5" >{data.mentor ? ('Mentor') : ('Student')}</p>
                                     <p className='text-white font-medium text-md'>{data.email}</p>
                                     {data.mentorShift.studentId === loggedUser.id ? (
-                                        <a href={`${data.personal_meeting_url}`} target='_blank' className='text-blue-300 underline font-medium text-md'>{data.personal_meeting_url.substring(0, Math.max(10, data.email.length))} . . .</a>
+                                        <a href={`${data.personal_meeting_url}`} target='_blank' className='text-blue-300 underline font-medium text-md'>{data.personal_meeting_url.substring(0, Math.max(10, data.email.length))} ...</a>
                                     ) : (
-                                        <>
-                                            not detected
-                                        </>
+                                        <></>
                                     )}
                                 </div>
                             </span>
@@ -296,16 +295,21 @@ export default function Profile({ foundUser }) {
     const router = useRouter()
     const {data: session, status} = useSession();
     const { id } = router.query
-    console.log('sessino from profile method: ', session)
+    console.log('session from profile method: ', session)
     if(status === 'authenticated') {
+        
         if(!foundUser) {
             return <h1>No User Found</h1>
         }
         if(id === session?.user.id) {
-            return <ProfileIfLoggedUser user={foundUser} id={id} />
+            return <>
+                <ProfileIfLoggedUser user={foundUser} id={id} />
+            </>
         }
         else {
-            return <ProfileIfDiffUser user={foundUser} id={id} loggedUser={session?.user} />
+            return <>
+                <ProfileIfDiffUser user={foundUser} id={id} loggedUser={session?.user} />
+            </>
         }
     }
 }
