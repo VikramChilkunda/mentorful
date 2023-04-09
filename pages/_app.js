@@ -62,8 +62,8 @@ function SpecialLink(props) {
 }
 const Header = ({serverSession}) => {
     const { data: session, status } = useSession();
-    if(status === "authenticated"){
-        console.log(session.user)
+    if(status != "loading"){
+        // console.log(session.user)
         return (
             <header className="sticky top-0 z-50">
                 <nav className="bg-white border-gray-200 px-2 sm:px-4 py-2.5 dark:bg-gray-900 w-full">

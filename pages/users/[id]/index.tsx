@@ -36,8 +36,9 @@ export async function getServerSideProps({ params }) {
 
 }
 
-function Shift(props: User) {
+function Shift(props) {
     const exists = props.user
+    const diff = props.diff
     const router = useRouter()
     // console.log(exists);
     async function handleSubmit(e: BaseSyntheticEvent) {
@@ -64,6 +65,7 @@ function Shift(props: User) {
         }
         userData().then((data) => {            
             if(data.status === 200){
+                location.reload()
                 toast.success("Succesfully cancelled your meeting!")
                 router.push(`/users/${exists.id}`)
             }
@@ -74,16 +76,30 @@ function Shift(props: User) {
     }
     if(exists) {
         if(exists.mentorShift) {
-            return <div className='flex flex-col ml-2 items-end'>
+            if(diff) {
+                return <div className='flex flex-col ml-2 items-end'>
+                        <h2 className='font-semibold inline-block text-yellow-400'>{timeToText(exists.mentorShift.from)} - {timeToText(exists.mentorShift.to)} on {exists.mentorShift.date.month+1  }/{exists.mentorShift.date.date}</h2>
+                    </div>
+            }
+            else {
+                return <div className='flex flex-col ml-2 items-end'>
                         <h2 className='font-semibold inline-block text-yellow-400'>{timeToText(exists.mentorShift.from)} - {timeToText(exists.mentorShift.to)} on {exists.mentorShift.date.month+1  }/{exists.mentorShift.date.date}</h2>
                         <button className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-3 py-2 mt-1  dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900" onClick={handleSubmit}>Cancel</button>
                     </div>
+            }
         }
         else if(exists.studentShift) {
-            return <div className='flex flex-col ml-2 items-end'>
-                <h2 className=' font-semibold text-yellow-400'>{timeToText(exists.studentShift.from)} - {timeToText(exists.studentShift.to)} on {exists.studentShift.date.month+1}/{exists.studentShift.date.date}</h2>
-                <button className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-3 py-2 mt-1  dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900" onClick={handleSubmit}>Cancel</button>
-            </div>
+            if(diff){
+                return <div className='flex flex-col ml-2 items-end'>
+                    <h2 className=' font-semibold text-yellow-400'>{timeToText(exists.studentShift.from)} - {timeToText(exists.studentShift.to)} on {exists.studentShift.date.month+1}/{exists.studentShift.date.date}</h2>
+                </div>
+            }
+            else {
+                return <div className='flex flex-col ml-2 items-end'>
+                    <h2 className=' font-semibold text-yellow-400'>{timeToText(exists.studentShift.from)} - {timeToText(exists.studentShift.to)} on {exists.studentShift.date.month+1}/{exists.studentShift.date.date}</h2>
+                    <button className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-3 py-2 mt-1  dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900" onClick={handleSubmit}>Cancel</button>
+                </div>
+            }
         }
         else {
             return <h2 className='font-medium text-red-500'>Not registered for a meeting</h2>  
@@ -139,15 +155,16 @@ function SignUpMentor(props) {
     )
 }
 //for when the logged in user is viewing their own profile
-function ProfileIfLoggedUser (user, id) {
-    const data = user.user
+function ProfileIfLoggedUser ({user, id}) {
+    const data = user
+    if(!data) return <></>
     return(
     <main className='bg-main bg-cover'>
         <section className=" bg-black/40 flex font-medium items-center justify-center h-screen w-full">
             <section className=" mx-auto bg-[#20354b] rounded-2xl p-9 w-1/3 shadow-lg relative">
                 <div>
                     <div className="flex flex-row-reverse items-baseline ml-auto">
-                        {data.subjects.length? (
+                        {data.subjects?.length? (
                             <ul>
                                 {data.subjects.map((subject: string) => (
                                     <li className='text-md text-white uppercase font-semibold'>{subject}</li>
@@ -178,6 +195,11 @@ function ProfileIfLoggedUser (user, id) {
                         </div>
                         <p className="text-emerald-400 font-semibold mt-2.5" >{data.mentor ? ('Mentor') : ('Student')}</p>
                         <p className='text-white font-medium text-md'>{data.email}</p>
+                        {data.mentor && data.personal_meeting_url ? (
+                            <a href={`${data.personal_meeting_url}`} target='_blank' className='text-blue-300 underline font-medium text-md'>{data.personal_meeting_url.substring(0, Math.max(10, data.email.length))} . . .</a>
+                        ) : (
+                            <></>
+                        )}
                     </div>
                     <div className='flex relative w-fit mt-auto ml-auto items-center h-fit'>
                         {/* <img src="https://www.iconarchive.com/download/i103365/paomedia/small-n-flat/calendar.1024.png" className='w-10 h-10' alt="" /> */}
@@ -191,9 +213,8 @@ function ProfileIfLoggedUser (user, id) {
 }
 
 //for when the logged in user is viewing someone else's profile
-function ProfileIfDiffUser(user, id) {
-    const data = user.user
-    console.log("different user, : ", data)
+function ProfileIfDiffUser({user, id, loggedUser}) {
+    const data = user
     if(!data) return <></>
     if(data.mentor) {
         return(
@@ -211,6 +232,13 @@ function ProfileIfDiffUser(user, id) {
                                     </div>
                                     <p className="text-emerald-400 font-semibold mt-2.5" >{data.mentor ? ('Mentor') : ('Student')}</p>
                                     <p className='text-white font-medium text-md'>{data.email}</p>
+                                    {data.mentorShift.studentId === loggedUser.id ? (
+                                        <a href={`${data.personal_meeting_url}`} target='_blank' className='text-blue-300 underline font-medium text-md'>{data.personal_meeting_url.substring(0, Math.max(10, data.email.length))} . . .</a>
+                                    ) : (
+                                        <>
+                                            not detected
+                                        </>
+                                    )}
                                 </div>
                             </span>
                             <div className='flex flex-col ml-auto max-w-[40%]'>
@@ -227,15 +255,8 @@ function ProfileIfDiffUser(user, id) {
                                         </p>
                                     )}
                                 </div>
-                                <div className='flex relative w-fit mt-auto ml-auto items-center h-fit'>
-                                    <img src="https://www.iconarchive.com/download/i103365/paomedia/small-n-flat/calendar.1024.png" className='w-10 float-left' alt="" />
-                                    <p className='text-white font-semibold inline-block ml-5'>
-                                        {data.mentorShift ? (data.mentorShift.date.name) : (
-                                            (data.studentShift ? (data.studentShift.date.name) : (
-                                                "No Shift"
-                                            ))
-                                        )}
-                                    </p>
+                                <div className='flex relative w-64 mt-auto ml-auto items-center h-fit text-end'>
+                                    <Shift  user={data} diff={true}/>
                                 </div>
                             </div>
                         </div>
@@ -273,16 +294,19 @@ function ProfileIfDiffUser(user, id) {
 
 export default function Profile({ foundUser }) {
     const router = useRouter()
-    const {data: session} = useSession();
+    const {data: session, status} = useSession();
     const { id } = router.query
-    if(!foundUser) {
-        return <h1>No User Found</h1>
-    }
-    if(id === session?.user.id) {
-        return <ProfileIfLoggedUser user={foundUser} id={id} />
-    }
-    else {
-        return <ProfileIfDiffUser user={foundUser} id={id} />
+    console.log('sessino from profile method: ', session)
+    if(status === 'authenticated') {
+        if(!foundUser) {
+            return <h1>No User Found</h1>
+        }
+        if(id === session?.user.id) {
+            return <ProfileIfLoggedUser user={foundUser} id={id} />
+        }
+        else {
+            return <ProfileIfDiffUser user={foundUser} id={id} loggedUser={session?.user} />
+        }
     }
 }
 

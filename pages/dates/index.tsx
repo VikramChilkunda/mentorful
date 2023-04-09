@@ -33,7 +33,7 @@ export default function TestIndex({ data }) {
                 <div className="grid grid-cols-7 gap-4 mt-10">
                     { data.map((date) => (
                         <div key={ date.id } className="mb-2 text-2xl font-bold tracking-tight text-gray-900">
-                            <Link href={`/dates/${date.id}`} className="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100">
+                            <Link href={`/dates/${date.id}`} className="bg-white/50 block max-w-sm p-6 border border-gray-200 rounded-lg shadow">
                                 {date.name}
                             </Link>
                         </div>
