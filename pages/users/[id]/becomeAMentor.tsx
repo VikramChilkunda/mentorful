@@ -58,8 +58,8 @@ export default function Profile({ user }) {
 	if(session?.user.id === id) {
 		if(session?.user.personal_meeting_url) {
 			return (
-				<main className='bg-main bg-cover '>
-					<div className='bg-black/40 content-center h-screen flex flex-col md:px-48'>
+				<main className='bg-main bg-cover h-screen'>
+					<div className='bg-black/40 content-center h-full flex flex-col md:px-48'>
 						<div className=' m-auto w-full xl:w-2/3 justify-center p-10'>
 							<h1 className="font-semibold text-3xl mb-5 text-white">Please enter the secret key to become a mentor: </h1>
 							<form onSubmit={ handleSubmit } className=''>
@@ -81,8 +81,8 @@ export default function Profile({ user }) {
 	}	
 	else {
 		return(
-			<main className='bg-main bg-cover '>
-				<div className='bg-black/40 content-center h-screen flex flex-col px-48 '>
+			<main className='bg-main bg-cover h-screen'>
+				<div className='bg-black/40 content-center h-full flex flex-col px-48 '>
 					<div className=' m-auto w-2/3 justify-center p-10'>
 						<h1 className="font-semibold text-3xl mb-5 text-white">Please do not try to edit another user's account! </h1>
 					</div>

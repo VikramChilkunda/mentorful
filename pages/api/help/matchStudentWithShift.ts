@@ -11,9 +11,7 @@ export default async function getAllDates(req: NextApiRequest, res: NextApiRespo
     const userShift = await prisma.shift.findFirst({
         where: {
             studentId: session.user.id,
-
         },
-
     })
         
     
@@ -34,7 +32,7 @@ export default async function getAllDates(req: NextApiRequest, res: NextApiRespo
             
             // console.log(updatedShift);
             // console.log('end update section');
-            res.send(200).send("Succesfully signed up for a 1-on-1 session!")
+            res.status(200).send("Succesfully signed up for a 1-on-1 session!")
         }
         else {
             res.status(403).send("You already have a 1-on-1 session for this week!")

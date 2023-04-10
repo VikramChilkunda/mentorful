@@ -75,20 +75,24 @@ function StudentShift(props) {
     const shift = props.shift
     
     return (
-        <div className="flex bg-white border border-purple-700 rounded-lg shadow md:flex-row space-between ml-auto">
+        <div className="flex bg-white border border-purple-700 rounded-lg shadow md:flex-row space-between m-auto text-black w-[90%] md:w-1/3 overflow-hidden">
             <div className='flex-col border-r-2 grow'>
                 <div className='flex items-center '>
                     <img referrerPolicy="no-referrer" className="rounded-tl-lg h-1/2 md:h-auto mr-3" src={shift.student.image} alt=""></img>
-                    <h5 className="h-[49%] text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{shift.student.username}</h5>
+                    <h5 className="h-[49%] text-2xl font-bold tracking-tight text-black">{shift.student.username}</h5>
                 </div>
                 <hr></hr>
                 <div className='flex items-center'>
                     <img referrerPolicy="no-referrer" className=" rounded-bl-lg h-1/2 md:h-auto mr-3" src={shift.mentor.image} alt=""></img>
-                    <h5 className="h-[49%] text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{shift.mentor.username}</h5>
+                    <h5 className="h-[49%] text-2xl font-bold tracking-tight text-black">{shift.mentor.username}</h5>
                 </div>
             </div>
-            <div className="flex flex-col justify-between p-4 leading-normal w-1/5 justify-self-end grow">
-                <p className="font-semibold text-2xl text-white m-auto">{timeToText(shift.from)} - {timeToText(shift.to)} on {shift.date.month+1}/{shift.date.date}</p>
+            <div className="flex flex-col justify-between p-4 leading-normal w-1/3 justify-self-end grow">
+                <p className="font-semibold text-2xl text-black m-auto">{shift.date.month+1}/{shift.date.date}: 
+                </p>
+                <p className='font-semibold  w-[90%] text-black m-auto text-lg text-center'>
+                    {timeToText(shift.from)} <br></br>- {timeToText(shift.to)}
+                </p>
             </div>
         </div>)
 }
@@ -151,8 +155,8 @@ export default function Home({ shifts }) {
     
     return (
         <div className='bg-main bg-cover h-screen'>
-            <div className='bg-black/40 h-screen'>
-                <div className='w-full md:w-2/3 lg:w-[80%] xl:w-[80%] justify-around flex flex-wrap m-auto pt-5'>
+            <div className='bg-black/40 min-h-full'>
+                <div className='w-full md:w-2/3 lg:w-[80%] xl:w-[80%] justify-around flex flex-wrap m-auto pt-10'>
                     {
                         (shifts.map((shift) => (
                             (shift.student ? (
@@ -167,7 +171,7 @@ export default function Home({ shifts }) {
                 {
                     (shifts.length === 0 && 
                     <div className='w-1/2 m-auto'>
-                        <div className="m-auto w-1/2 flex flex-col bg-white/50 justify-center border border-purple-700 rounded-lg shadow md:flex-row hover:bg-gray-100">
+                        <div className="m-auto w-1/2 flex flex-col bg-white justify-center border border-purple-700 rounded-lg shadow md:flex-row">
                             <div className="flex flex-col p-4 leading-normal">
                                 <h5 className="text-2xl font-bold tracking-tight text-gray-900">No Mentors Available</h5>
                             </div>

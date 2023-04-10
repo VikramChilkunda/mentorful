@@ -86,19 +86,17 @@ export default function Show({ paramDate }: InferGetStaticPropsType<typeof getSe
             <Head>
                 <title>{paramDate.name}</title>
             </Head>
-            <div className='bg-main bg-cover h-fit md:h-screen'>
-                <div className='grid place-items-center gap-y-20 h-fit bg-black/40 md:h-screen'>
+            <div className='bg-main bg-cover h-screen'>
+                <div className='grid place-items-center gap-y-20 min-h-full bg-black/40'>
                     <div className=' grid px-10 py-10 gap-y-20 place-items-center'>
-                        <h1 className='flex items-center text-5xl text-white font-extrabold mt-10'> 
+                        <h1 className='text-6xl text-white font-extrabold mt-10'> 
                             {paramDate.name.substring(0, paramDate.name.length-2)}
                         </h1>
                         <div className='flex justify-center items-center h-screen"'>
-                            <div className='grid grid-cols-1 md:grid-cols-3 xl:grid-cols-6 gap-5 max-w-[75%] '>
+                            <div className='grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-5'>
                                 {paramDate.times.map((time, index) => (
                                     <div key={index} onClick={handleClick} className='bg-teal-500 p-5 rounded-md hover:cursor-pointer hover:scale-110 transition ease-in-out '>
-                                        <div>
                                             {addTime(time)}
-                                        </div>
                                     </div>
                                 ))}
                             </div>
