@@ -85,7 +85,7 @@ function Shift(props) {
             else {
                 return <div className='flex flex-col ml-2 items-end'>
                     <h2 className='font-semibold inline-block text-yellow-400'>{ timeToText(exists.mentorShift.from) } - { timeToText(exists.mentorShift.to) } on { exists.mentorShift.date.month + 1 }/{ exists.mentorShift.date.date }</h2>
-                    <button className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-3 py-2 mt-1  dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900" onClick={ handleSubmit }>Cancel</button>
+                    <button className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-3 py-2 mt-1" onClick={ handleSubmit }>Cancel</button>
                 </div>
             }
         }
@@ -98,7 +98,7 @@ function Shift(props) {
             else {
                 return <div className='flex flex-col ml-2 items-end'>
                     <h2 className=' font-semibold text-yellow-400'>{ timeToText(exists.studentShift.from) } - { timeToText(exists.studentShift.to) } on { exists.studentShift.date.month + 1 }/{ exists.studentShift.date.date }</h2>
-                    <button className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-3 py-2 mt-1  dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900" onClick={ handleSubmit }>Cancel</button>
+                    <button className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-3 py-2 mt-1" onClick={ handleSubmit }>Cancel</button>
                 </div>
             }
         }
@@ -139,7 +139,7 @@ function Delete(props) {
     }
 
     if (exists && session?.user.id === exists.id) {
-        return (<button onClick={ handleSubmit } className="focus:outline-none text-black bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-2.5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Delete</button>)
+        return (<button onClick={ handleSubmit } className="focus:outline-none text-black bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-2.5 py-2.5 mr-2 mb-2">Delete</button>)
     }
     else {
         return <></>
@@ -162,7 +162,7 @@ function ProfileIfLoggedUser({ user, id }) {
     return (
         <main className='bg-main bg-cover h-screen'>
             <section className=" bg-black/40 flex font-medium items-center justify-center h-full w-full">
-                <section className=" bg-[#20354b] rounded-2xl p-9 shadow-lg relative max-w-screen-sm w-full mx-5">
+                <section className=" bg-[#20354b] rounded-2xl p-9 shadow-lg relative max-w-screen-sm w-full mx-5 h-fit">
                     <div className='flex-[6]'>
                         <div className="flex justify-between items-baseline ml-auto">
                             { data.subjects?.length ? (
@@ -178,7 +178,7 @@ function ProfileIfLoggedUser({ user, id }) {
                             <div className="text-emerald-400">
                                 <Delete user={ data } />
                                 { data.mentor ? (
-                                    <Link href={ `/users/${data.id}/edit` } className='inline no-underline text-black bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800'>Edit</Link>
+                                    <Link href={ `/users/${data.id}/edit` } className='inline no-underline text-black bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 focus:outline-none'>Edit</Link>
                                 ) : (
                                     <></>
                                 ) }
@@ -197,9 +197,26 @@ function ProfileIfLoggedUser({ user, id }) {
                             <p className="text-emerald-400 font-semibold mt-2.5" >{ data.mentor ? ('Mentor') : ('Student') }</p>
                             <p className='text-white font-medium text-md'>{ data.email }</p>
                             { data.mentor && data.personal_meeting_url ? (
-                                <a href={ `${data.personal_meeting_url}` } target='_blank' className='text-blue-300 underline font-medium text-md'>{ data.personal_meeting_url.substring(0, Math.max(10, data.email.length)) } ...</a>
+                                <>
+                                    <span className='text-xs text-gray-400 uppercase'>Meeting Link:  </span>
+                                    
+                                    <a href={ `${data.personal_meeting_url}` } target='_blank' className='text-blue-300 underline font-medium text-sm'>
+                                        {data.personal_meeting_url.length <= 20 ? (
+                                            data.personal_meeting_url
+                                        ) : (
+                                            data.personal_meeting_url.substring(0, Math.max(20, data.email.length))+ "..."
+                                        )}
+                                    </a>
+                                    <p className='text-white font-medium text-sm'>
+                                        <span className='text-xs text-gray-400 uppercase'>Meeting Password:  </span>
+                                        { data.meeting_password }
+                                    </p>
+                                </>
                             ) : (
-                                <></>
+                                data.mentor && (
+                                    <Link href={ `/users/${data.id}/setZoom` } className='no-underline block w-fit mb-3 md:mb-0 md:mx-0 mx-auto text-black bg-blue-700 hover:bg-blue-800 focus:ring-4
+                                     focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mt-2 focus:outline-none '>Add Zoom Information</Link>
+                                )
                             ) }
                         </div>
                         <div className='flex relative w-fit mt-auto md:ml-auto h-fit text-right'>
@@ -219,8 +236,8 @@ function ProfileIfDiffUser({ user, id, loggedUser }) {
     if (!data) return <></>
     if (data.mentor) {
         return (
-            <main className='bg-main bg-cover'>
-                <section className=" bg-black/40 flex font-medium items-center justify-center h-screen w-full">
+            <main className='bg-main bg-cover h-screen'>
+                <section className=" bg-black/40 flex font-medium items-center justify-center h-full w-full">
                     <section className="bg-[#20354b] rounded-2xl p-9 shadow-lg relative max-w-screen-sm w-full mx-5">
                         <div className='flex-[6]'>
                             <div className="flex justify-between items-baseline ml-auto">
@@ -246,8 +263,19 @@ function ProfileIfDiffUser({ user, id, loggedUser }) {
                                 </div>
                                 <p className="text-emerald-400 font-semibold mt-2.5" >{ data.mentor ? ('Mentor') : ('Student') }</p>
                                 <p className='text-white font-medium text-md'>{ data.email }</p>
-                                { data.mentor && data.personal_meeting_url && data.mentorShift.studentId === loggedUser.id ? (
-                                    <a href={ `${data.personal_meeting_url}` } target='_blank' className='text-blue-300 underline font-medium text-md'>{ data.personal_meeting_url.substring(0, Math.max(10, data.email.length)) } ...</a>
+                                { data.mentor && data.personal_meeting_url && data.mentorShift?.studentId === loggedUser.id ? (
+                                    <>
+                                        <span className='text-xs text-gray-400 uppercase'>Meeting Link:  </span>
+                                        <a href={ `${data.personal_meeting_url}` } target='_blank' className='text-blue-300 underline font-medium text-sm'>{data.personal_meeting_url.length <= 20 ? (
+                                            data.personal_meeting_url
+                                        ) : (
+                                            data.personal_meeting_url.substring(0, Math.max(20, data.email.length))+ "..."
+                                        )}</a>
+                                        <p className='text-white font-medium text-sm'>
+                                            <span className='text-xs text-gray-400 uppercase'>Meeting Password:  </span>
+                                            { data.meeting_password }
+                                        </p>
+                                    </>
                                 ) : (
                                     <></>
                                 ) }

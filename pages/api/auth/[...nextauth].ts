@@ -60,9 +60,12 @@ export const authOptions: NextAuthOptions = {
                 }
             })
             // console.log("finishes the prism call in the session method")
-            if(updatedUser) session.user = updatedUser
+            if(updatedUser) {
+                session.user = updatedUser
+                console.log("just updated user through session: ", updatedUser)
+            }
             else session.user = token.user
-            console.log("setting session here: ", session)
+            // console.log("setting session here: ", session)
             return session
         },
     },

@@ -7,6 +7,11 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/pages/api/auth/[...nextauth]'
 import toast from 'react-hot-toast';
 import { timeToText } from '@/utils/timeToString';
+import { Inter, Poppins, Rubik } from 'next/font/google'
+
+const inter = Inter({ subsets: ['latin'] })
+const rubik = Rubik({ subsets: ['latin'] })
+const poppins = Poppins({subsets: ['latin'], weight: "500"})
 
 export async function getServerSideProps(context) {
     const session = await getServerSession(context.req, context.res, authOptions)
@@ -41,41 +46,10 @@ export async function getServerSideProps(context) {
         },
     }
 }
-// function Group(props) {
-//     let {groupShifts} = props
-    
-    
-//     const rows = []
-//     for(let i = 0; i < groupShifts.length; i++) {
-//         if(groupShifts[i]?.student){
-//             rows.push(<StudentShift key={groupShifts[i].id} shift={groupShifts[i]} />)
-//         }
-//         else if(groupShifts[i]?.mentor){
-//             rows.push(<Shift key={groupShifts[i].id} shift={groupShifts[i]} />)
-            
-
-//         }
-//     }
-//     return(
-//         <div className="pt-5 flex justify-center items-start h-screen bg-cover">
-//             <div className="w-4/5">
-//                 <div className="flex flex-row justify-between">
-//                     { rows.map((row, idx) => (
-//                         <div key={idx} className={`w-1/${groupShifts.length}`}>
-//                             {row}
-//                         </div>
-//                     ))}
-//                 </div>
-//             </div>
-//         </div>
-        
-//     )
-// }
 function StudentShift(props) {
     const shift = props.shift
-    
     return (
-        <div className="flex bg-white border border-purple-700 rounded-lg shadow md:flex-row space-between m-auto text-black w-[90%] md:w-1/3 overflow-hidden">
+        <div className={`flex bg-[#eee]/80 border border-purple-700 rounded-lg shadow md:flex-row space-between m-auto text-black overflow-hidden ${inter.className}`}>
             <div className='flex-col border-r-2 grow'>
                 <div className='flex items-center '>
                     <img referrerPolicy="no-referrer" className="rounded-tl-lg h-1/2 md:h-auto mr-3" src={shift.student.image} alt=""></img>
@@ -107,16 +81,14 @@ function Shift(props) {
     }
     //redundant, mentor shifts are only retrieved if not filled
     return (
-        // <div className="flex flex-col items-center border border-purple-700 rounded-lg shadow md:flex-row bg-white/40">
-            <div className='flex items-center bg-white/60 rounded-md pl-5 pr-5 pt-2 pb-2 m-auto mb-5 xl:m-0 xl:pl-5 xl:pr-10'>
-                <img referrerPolicy="no-referrer" className="object-cover w-[60%] rounded-lg" src={shift.mentor.image} alt=""></img>
-                <div className="flex flex-col justify-between p-4">
-                    <h5 className="text-2xl font-bold tracking-tight text-gray-900">{shift.mentor.username}</h5>
-                    <p className="font-normal text-black">{timeToText(shift.from)} - {timeToText(shift.to)} on {shift.date.month+1}/{shift.date.date}</p>
-                    <button type="button" onClick={handleSubmit} className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 ">Select</button>
-                </div>
+        <div className={`flex items-center bg-[#eee]/80 rounded-md px-5 py-4 m-auto mb-5  ${rubik.className}`}>
+            <img referrerPolicy="no-referrer" className="object-cover w-[60%] rounded-lg mr-5" src={shift.mentor.image} alt=""></img>
+            <div className={`flex flex-col justify-between`}>
+                <h5 className="text-2xl font-bold tracking-tight text-gray-900">{shift.mentor.username}</h5>
+                <p className="text-black">{timeToText(shift.from)} - {timeToText(shift.to)} on {shift.date.month+1}/{shift.date.date}</p>
+                <button type="button" onClick={handleSubmit} className="justify-self-end focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5">Select</button>
             </div>
-        // </div>     
+        </div>   
     )
 
     async function handleSubmit(e: BaseSyntheticEvent) {

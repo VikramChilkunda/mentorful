@@ -2,17 +2,41 @@
 import prisma from '@/prisma/client'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-export async function getStaticProps() {
+
+import generate from '@/utils/generateDates'
+
+export async function getServerSideProps() {
     // alert('test')
+    
+
     let data = await prisma.date.findMany({})
-    console.log(data)
-    if(!data || Math.abs(data[0].lastUpdated - new Date().getDate()) >= 5) {
-        await fetch('/api/generateDates', {
-            method: "GET"
-        })
+    if(!data[0] || Math.abs(data[0].lastUpdated - new Date().getDate()) >= 5 || data.length > 7) {
+        const date = new Date()
+        const deletedShifts = await prisma.shift.deleteMany({})
+        const deletedDates = await prisma.date.deleteMany({})
+
+        const results = generate(date.getDay(), date)
+        const currDates = await prisma.date.findMany({})
+        console.log("dates before update: ", currDates)
+        console.log("outputted from method: ", results)
+        let dates = []
+        for(const result of results) {
+            const addDate = await prisma.date.create({
+                data: {
+                    date: result.date,
+                    name: result.name,
+                    lastUpdated: date.getDate(),
+                    times: [
+                        8,9,10,11,12,13,14,15,16,17,18,19,20
+                    ],
+                    month: result.month
+                }
+            })
+            dates.push(addDate)
+        }
+        console.log("array pushed: ", dates)
+        data = await prisma.date.findMany({})    
     }
-    data = await prisma.date.findMany({})    
-    console.log("genreated dates: ")
     
     let title = "Calendar"
     return {
@@ -24,7 +48,6 @@ export async function getStaticProps() {
 
 
 export default function TestIndex({ data }) {
-    console.log("dates: ", data);
     const monthDateObj = new Date()
     monthDateObj.setMonth(data[0].month)
     return (

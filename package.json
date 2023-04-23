@@ -28,6 +28,7 @@
     "react-hot-toast": "^2.4.0",
     "react-icons": "^4.8.0",
     "react-router-dom": "^6.8.2",
+    "tailwindcss-autofill": "^1.0.2",
     "vercel": "^28.18.3"
   },
   "devDependencies": {

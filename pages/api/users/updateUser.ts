@@ -6,7 +6,8 @@ import { getServerSession } from "next-auth/next"
 
 export default async function newUser(req: NextApiRequest, res: NextApiResponse) {
 	const body = JSON.parse(req.body)
-	const id = body[0], subjects = body[1]
+	const id = body[0], subjects = body[1], personal_meeting_url = body[2], meeting_password = body[3]
+	console.log("selected subjects: ", subjects)
 	const session = await getServerSession(req, res, authOptions)
 
 	const user = await prisma.user.findUnique({
@@ -17,17 +18,33 @@ export default async function newUser(req: NextApiRequest, res: NextApiResponse)
 
 	if(session?.user.id !== id)
 		res.status(404).send('You are not authorized to do that!')
-	if(subjects.length === 0 || subjects.length > 3)
-		res.status(400).send("Choose a valid amount of subjects!")
 	else if(!user?.mentor) res.status(403).send("You cannot do that!")
-	const updateUsers = await prisma.user.update({
-		where: {
-			id
-		},
-		data: {
-			subjects
+	else{
+		let params = {}
+		if(personal_meeting_url) {
+			if(meeting_password) {
+				params = {
+					subjects, personal_meeting_url, meeting_password
+				}
+			}
+			else params = {subjects, personal_meeting_url, meeting_password:null}
 		}
-	})
-	
-	res.status(200).send(updateUsers);
+		else params = {subjects, personal_meeting_url:null, meeting_password:null}
+		const updateUsers = await prisma.user.update({
+			where: {
+				id
+			},
+			data: {
+				...params
+			}
+		})
+		if(personal_meeting_url) {
+			session.user.personal_meeting_url = personal_meeting_url
+			if(meeting_password)
+				session.user.meeting_password = meeting_password
+			console.log("getting here")
+		}
+		
+		res.status(200).send(updateUsers);
+	}
 }

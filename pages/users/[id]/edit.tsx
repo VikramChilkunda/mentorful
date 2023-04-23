@@ -11,7 +11,6 @@ export async function getServerSideProps({ params }) {
 			id: params.id
 		}
 	});
-	console.log("Found user: ",data)
 
 	return {
 		props: {
@@ -60,10 +59,13 @@ export default function Profile({ data }) {
 
 	}
 	async function handleSubmit() {
-		const params = [data.id, selectedSubjects]
+		const id = data.id
+		const personal_url = data.personal_meeting_url
+		const password = data.meeting_password
+		const params = [id, selectedSubjects, personal_url, password]
 		if(!data.mentor)
 			return;
-		if(selectedSubjects.length == 0){
+		if(selectedSubjects.length === 0){
 			toast.error("Must select at least one subject!")
 			return;
 		}
@@ -82,16 +84,19 @@ export default function Profile({ data }) {
 			toast.error("Unable to update your profile!")
 		}
 	}
+
 	return (
 		<div className='bg-main bg-cover h-screen'>
 			<div className='h-full bg-black/40'>
-				<div className="w-1/2 mx-auto bg-white/20 p-20 flex flex-col content-center justif">
+				<div className="max-w-3xl lg:mx-auto mx-10 bg-white/20 p-20 flex flex-col content-center ">
+					<Link href={ `/users/${data.id}/setZoom` } className='underline w-full text-center mb-3 md:mb-0 md:mx-0 
+					rounded-lg text-sm px-5 py-2.5 mt-2 focus:outline-none text-blue-400 font-semibold'>Looking to Modify Your Zoom Information? Click here!</Link>
 					<p className="text-3xl font-bold text-white mb-4 text-center">Subjects</p>
-					<ul className="space-y-2 flex flex-col items-center">
+					<ul className="space-y-2 flex flex-col items-center max-w-lg mx-auto">
 						<span>
 						{	
 							subjects.map((subject) => (
-								<li className='flex items-center mb-2' key={subject}>
+								<li className='flex items-center mb-4 md:mb-2' key={subject}>
 									<input onClick={handleSelect} type="checkbox" id={subject} name={subject} className="mr-2"/>
 									<label htmlFor={subject} className={`font-medium text-lg text-white ${(userSubjects.includes(subject) ? 'text-yellow-300' : 'text-black')}`}>{subject}</label>
 								</li>
@@ -99,7 +104,7 @@ export default function Profile({ data }) {
 						}
 						</span>
 					</ul>
-					<button onClick={handleSubmit} className="bg-blue-500 w-1/3 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mx-auto mt-7">
+					<button onClick={handleSubmit} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mx-auto mt-7 max-w-sm">
 					Submit
 					</button>
 				</div>

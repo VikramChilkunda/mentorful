@@ -24,6 +24,7 @@ export default function Profile({ user }) {
 	const router = useRouter()
 	const { id } = router.query
 	const [secret, setSecret] = useState();
+	const [link, setLink] = useState();
 	const { data: session, status } = useSession()
 
 	function secretChange(e: BaseSyntheticEvent) {
@@ -33,7 +34,7 @@ export default function Profile({ user }) {
 		e.preventDefault();
 		const postData = async () => {
 			const data = {
-				secret, id
+				secret, id, link, password
 			};
 			const response = await fetch("/api/users/becomeMentor", {
 				method: "POST",
@@ -41,7 +42,6 @@ export default function Profile({ user }) {
 			});			
 			if (response.status === 200) {
 				toast.success("You are now a mentor!")
-
 			}
 			else if (response.status === 400) {
 				toast.error("You already are a mentor!")
@@ -55,29 +55,43 @@ export default function Profile({ user }) {
 			location.assign(`/users/${id}`)
 		})
 	}
+	function addLink(e: BaseSyntheticEvent) {
+		setLink(e.target.value)
+	}
+	const [password, setPassword] = useState()
+	function passwordChange(e: BaseSyntheticEvent) {
+		setPassword(e.target.value);
+	}
 	if(session?.user.id === id) {
-		if(session?.user.personal_meeting_url) {
+		// if(session?.user.personal_meeting_url) {
 			return (
 				<main className='bg-main bg-cover h-screen'>
 					<div className='bg-black/40 content-center h-full flex flex-col md:px-48'>
 						<div className=' m-auto w-full xl:w-2/3 justify-center p-10'>
 							<h1 className="font-semibold text-3xl mb-5 text-white">Please enter the secret key to become a mentor: </h1>
-							<form onSubmit={ handleSubmit } className=''>
+							<form onSubmit={ handleSubmit }>
 								<div className="relative z-0 w-full mb-6 group ">
-									<input onChange={ secretChange } value={ secret } type="password" name="floating_secret" id="floating_secret" className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
-									<label htmlFor="floating_email" className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Secret</label>
+									<label htmlFor="floating_email" className="peer-focus:font-medium absolute text-lg text-white duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Secret <span className='text-red-500'>*</span></label>
+									<input role="presentation" onChange={ secretChange } value={ secret } type="password" id="floating_secret" className="block py-2.5 px-0 w-full text-sm text-white bg-transparent border-0 border-b-2 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
 								</div>
-								<button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
+								<div className="relative z-0 w-full mb-6 group ">
+									<label htmlFor="floating_email" className="peer-focus:font-medium text-sm text-white
+									peer-focus:-translate-y-6">Zoom Meeting URL (personal meeting URL preferred but not necessary)</label>
+									<input onChange={addLink} type="text" className="block py-2.5 px-0 w-full text-sm text-white bg-transparent border-0 border-b-2 border-gray-300 appearance-none 
+									focus:outline-none focus:ring-0 focus:border-blue-600 peer" value={link} />
+								</div>
+								<div className="relative z-0 w-full mb-6 group ">
+									<label htmlFor="floating_email" className="peer-focus:font-medium text-sm text-white
+									peer-focus:-translate-y-6">Zoom Meeting password (if required)</label>
+									<input onChange={passwordChange}  type="text" className="block py-2.5 px-0 w-full text-sm text-white bg-transparent border-0 border-b-2 border-gray-300 appearance-none 
+									focus:outline-none focus:ring-0 focus:border-blue-600 peer" value={password}/>
+								</div>
+								<button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">Submit</button>
 							</form>
 						</div>
 					</div>
 				</main>
 			)
-		}
-		else {
-			toast.error("Please sign out and then sign in with a Zoom account in order to do that.")
-			router.push(`/users/${session?.user.id}`)
-		}
 	}	
 	else {
 		return(
