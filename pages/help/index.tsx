@@ -1,13 +1,15 @@
 import Link from 'next/link'
 
 import prisma from '@/prisma/client'
-import { BaseSyntheticEvent, useState } from 'react'
+import { BaseSyntheticEvent, SyntheticEvent, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/pages/api/auth/[...nextauth]'
 import toast from 'react-hot-toast';
 import { timeToText } from '@/utils/timeToString';
 import { Inter, Poppins, Rubik } from 'next/font/google'
+import { log } from 'console';
+import { loadGetInitialProps } from 'next/dist/shared/lib/utils';
 
 const inter = Inter({ subsets: ['latin'] })
 const rubik = Rubik({ subsets: ['latin'] })
@@ -49,7 +51,7 @@ export async function getServerSideProps(context) {
 function StudentShift(props) {
     const shift = props.shift
     return (
-        <div className={`flex bg-[#eee]/80 border border-purple-700 rounded-lg shadow md:flex-row space-between m-auto text-black overflow-hidden ${inter.className}`}>
+        <div className={`flex bg-[#eee]/80 border rounded-lg shadow md:flex-row space-between m-auto text-black overflow-hidden ${inter.className}`}>
             <div className='flex-col border-r-2 grow'>
                 <div className='flex items-center '>
                     <img referrerPolicy="no-referrer" className="rounded-tl-lg h-1/2 md:h-auto mr-3" src={shift.student.image} alt=""></img>
@@ -86,6 +88,7 @@ function Shift(props) {
             <div className={`flex flex-col justify-between`}>
                 <h5 className="text-2xl font-bold tracking-tight text-gray-900">{shift.mentor.username}</h5>
                 <p className="text-black">{timeToText(shift.from)} - {timeToText(shift.to)} on {shift.date.month+1}/{shift.date.date}</p>
+                <p>{shift.mentor.subjects.join(", ")}</p>
                 <button type="button" onClick={handleSubmit} className="justify-self-end focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5">Select</button>
             </div>
         </div>   
@@ -122,14 +125,36 @@ function Shift(props) {
 
 export default function Home({ shifts }) {
     const all = []
+    const [query, setQuery] = useState()
+    function search(e: SyntheticEvent) {
+        e.preventDefault();
 
-
+    }
+    async function updateQuery(e: SyntheticEvent) {
+        e.preventDefault();
+        setQuery(e.target.value);
+        shifts = await fetch('/api/shifts/getShiftByQuery', {
+            method: "POST",
+            body: query
+        })
+    }
     
     return (
         <div className='bg-main bg-cover h-screen'>
             <div className='bg-black/40 min-h-full'>
                 <div className='w-full md:w-2/3 lg:w-[80%] xl:w-[80%] justify-around flex flex-wrap m-auto pt-10'>
-                    {
+                    <form className='w-1/3 mb-5'>   
+                        <label htmlFor="default-search" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+                        <div className="relative">
+                            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                <svg aria-hidden="true" className="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                            </div>
+                            <input onChange={updateQuery} type="search" id="default-search" className="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search Mentors, Subjects" required />
+                            <button onClick={search} className="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
+                        </div>
+                    </form>
+                    <>
+                    {   
                         (shifts.map((shift) => (
                             (shift.student ? (
                                 <StudentShift key={shift.id} shift={shift} />
@@ -138,12 +163,13 @@ export default function Home({ shifts }) {
                             ))
                         )))
                     }
+                    </>
                 </div>
                 <>
                 {
                     (shifts.length === 0 && 
                     <div className='w-1/2 m-auto'>
-                        <div className="m-auto w-1/2 flex flex-col bg-white justify-center border border-purple-700 rounded-lg shadow md:flex-row">
+                        <div className="m-auto flex flex-col bg-white justify-center border rounded-lg shadow md:flex-row max-w-lg">
                             <div className="flex flex-col p-4 leading-normal">
                                 <h5 className="text-2xl font-bold tracking-tight text-gray-900">No Mentors Available</h5>
                             </div>

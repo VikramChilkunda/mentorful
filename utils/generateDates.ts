@@ -22,6 +22,7 @@ export default function generate(displacement, date) {
 	// console.log("number of days in the current month: ", numDaysCurrMonth)
 
 	if(date.getDate() - displacement <= 0){
+		//if beginning of week is previous month
 		for (let i = displacement; date.getDate() - i <= 0 && counter < 7; i--, counter++) {
 			// console.log(`Loop iteration ${i}`, date.getDate() - i + numDaysPrevMonth)
 			const prevMonthDateObj = date
@@ -31,15 +32,20 @@ export default function generate(displacement, date) {
 				date: date.getDate() - i + numDaysPrevMonth,
 				name: prevMonthDateObj.toLocaleString('en-US', { month: "long" }) + " " + dateToText(date.getDate() - i + numDaysPrevMonth)
 			})
+			console.log("a: pushing here:", dates)
 		}
 		const currMonthDateObj = date
 		currMonthDateObj.setMonth(month)
+		console.log("counter before: ", counter)
+		//rest of the week, which is in the current month
 		for(let i = counter; i < 7; i++) {
 			dates.push({
 				month: month,
-				date: date.getDate() - displacement + counter,
-				name: currMonthDateObj.toLocaleString('en-US', { month: "long" }) + " " + dateToText(date.getDate())
+				date: date.getDate() - displacement + i,
+				name: currMonthDateObj.toLocaleString('en-US', { month: "long" }) + " " + dateToText(date.getDate() -displacement + i)
 			})
+			console.log("b: pushing here:", dates)
+			console.log('value of i: ', i)
 		}
 		return dates;
 	}
@@ -51,6 +57,7 @@ export default function generate(displacement, date) {
 				date: date.getDate() - i,
 				name: currDate.toLocaleString('en-US', { month: "long" }) + " " + dateToText(date.getDate() -i) 
 			})
+			console.log("c: pushing here:", dates)
 		}
 		return dates;
 	}
@@ -63,6 +70,7 @@ export default function generate(displacement, date) {
 				date: date.getDate() - displacement + i,
 				name: currMonthDateObj.toLocaleString('en-US', { month: "long" }) + " " + dateToText(date.getDate() - displacement + i)
 			})
+			console.log("d: pushing here:", dates)
 		}	
 		for(let i = 0; i < 7 - counter; i++, counter++){
 			// console.log('dsjaflsd')
@@ -73,7 +81,35 @@ export default function generate(displacement, date) {
 				date: i+1,
 				name: nextMonthDateObj.toLocaleString('en-US', { month: "long" }) + " " + dateToText(i+1)
 			})
+			console.log("e: pushing here:", dates)
 		}
 		return dates;
 	}
+}
+
+
+export  function generateV2() {
+	const today = new Date();
+	const currentDay = today.getDay(); // 0 (Sunday) to 6 (Saturday)
+	const startOfWeek = new Date(today); // Clone today's date
+	startOfWeek.setDate(today.getDate() - currentDay - 1); // Get the first day of the week
+	
+	const dates = [];
+	for (let i = 0; i < 7; i++) {
+		const date = new Date(startOfWeek);
+		date.setDate(startOfWeek.getDate() + i);
+		dates.push(date);
+	}
+	
+	console.log("generated dates")
+	const returnDates = []
+	for(let i = 0; i < dates.length; i++) {
+		returnDates.push({
+			month: dates[i].getMonth(),
+			date: dates[i].getDate(),
+			name: dates[i].toLocaleString('en-US', {month: "long"}) + " " + dateToText(dates[i].getDate())
+		})
+	}
+	console.log("adding the following dates: ", returnDates)
+	return returnDates
 }

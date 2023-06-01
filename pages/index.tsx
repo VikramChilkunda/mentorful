@@ -10,16 +10,13 @@ export default function Home() {
     const { data: session } = useSession();
     return (
         //bg-main refers to the background-iamge specfied in tailwind.config
-        <div className="relative overflow-hidden bg-cover bg-no-repeat text-center h-screen bg-main">
+        <div className="relative overflow-hidden bg-cover bg-no-repeat text-center h-screen bg-main bg-center">
             <div className=" h-full w-full overflow-hidden bg-fixed bg-black/40">
                 <div className="flex h-full items-center justify-center w-[80%] m-auto">
                     <div className="text-white">
                         <h2 className="mb-4 text-7xl md:text-8xl font-semibold">
                             Mentorful
                         </h2>
-                        <h4 className="mb-6 text-xl font-semibold">
-                            Everyone deserves education
-                        </h4>
                         <Link href='/help' className='no-underline text-white'>
                             <button
                                 type="button"

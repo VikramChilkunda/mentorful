@@ -10,14 +10,13 @@ export default function Home() {
     const { data: session } = useSession();
     return (
         //bg-main refers to the background-iamge specfied in tailwind.config
-        <div className="relative bg-cover bg-no-repeat text-center h-screen bg-[#eee]">
+        <div className="bg-cover bg-no-repeat min-h-screen text-center bg-[#eee]">
             <div className="w-full">
-                <div className="flex items-center justify-center max-w-[900px] mx-auto px-10 py-10">
-                    <div>
+                <div className="flex flex-col max-w-[900px] mx-auto px-10 py-10">
                         <h2 className="mb-4 text-6xl font-semibold lg:mt-20">
                             Our Mission
                         </h2>
-                        <h4 className="mb-10 text-xl leading-9">
+                        <h4 className="mb-10 text-xl leading-9 text-left">
                         Underrepresented minority enrollment in America’s top universities could drop dramatically during the next 
                         college admissions cycle due to the impending decisions of two supreme court cases, SFFA v. Harvard and SFFA v. 
                         UNC, which may outlaw race-conscious admissions. Our mission is to prevent a decrease in minority enrollment by 
@@ -25,14 +24,12 @@ export default function Home() {
                         4-year high school course planning, and mentorship to ensure that every student has the same opportunity to attend 
                         selective universities and maintain diversity in America’s college campuses.
                         </h4>
-                        <h2 className="mb-4 text-4xl mt-5 ">
+                        <h2 className="mb-4 text-4xl mt-5 font-semibold">
                             Our Selection Process
                         </h2>
-                        <h4 className="mb-6 text-xl leading-9">
+                        <h4 className="text-xl leading-9 text-left">
                         All students who believe they qualify for Mentorful benefits can request mentorship by signing up through our calendar. A select group of students recommended by our mentors and identified as highly-qualified applicants will be able to apply for our specialized mentorship program. Students in this program will receive full access to our college assistance, tutoring, course planning, and personalized career guidance services up until graduation.
                         </h4>
-                        
-                    </div>
                 </div>
             </div>
         </div>

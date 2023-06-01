@@ -7,7 +7,7 @@ export default function SignIn({ providers }: InferGetServerSidePropsType<typeof
     console.log("providers: ", providers)
     return (
         <div className="h-full bg-cover bg-main">
-            <div className="bg-black/40 h-full flex">
+            <div className="bg-black/40 h-screen flex">
                 <div className='m-auto w-full flex md:flex-row justify-center '>
                     <div className="flex flex-col max-w-md md:max-w-3xl ">
                         <h1 className="mt-0 mb-2 leading-tight text-white text-7xl font-semibold inline-block">Students <hr className="md:hidden mt-4 md:mt-0"/><span className="hidden md:inline">|</span> Mentors</h1>

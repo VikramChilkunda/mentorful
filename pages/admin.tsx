@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 import { GetServerSidePropsContext } from 'next';
 import { authOptions } from './api/auth/[...nextauth]';
+import { timeToText } from '@/utils/timeToString';
 
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
@@ -55,15 +56,16 @@ export default function Home({ data }) {
                 <tbody>
                     { data.map((user) => (
                         <tr key={ user.id }>
-                            <td className='border border-slate-400 px-5 font-semibold'>{ user.username }</td >
-                            <td className='border border-slate-400 px-5'>{ user.email }</td >
-                            <td className='border border-slate-400 px-5'>
-                                { user.studentShift ? (user.studentShift) : 
-                                    (user.mentorShift ? (user.mentorShift) : ('') )
+                            <td className='text-center border border-slate-400 px-5 font-semibold'>{ user.username }</td >
+                            <td className='text-center border border-slate-400 px-5'>{ user.email }</td >
+                            <td className='text-center border border-slate-400 px-5'>
+                                { user.studentShift ? (timeToText(user.studentShift.from) + ' - ' + timeToText(user.studentShift.to)) : 
+                                    (user.mentorShift ? (timeToText(user.mentorShift.from) + ' - ' + timeToText(user.mentorShift.to)) : 
+                                        ('No Shift') )
                                 }
                             </td >
-                            <td className='border border-slate-400 px-5'>{ user.mentor ? ("Yes") : ("No") }</td >
-                            <td className='border border-slate-400 px-5 text-blue-600 underline'><button onClick={() => handleClick(user.id)}>Delete</button></td>
+                            <td className='text-center border border-slate-400 px-5'>{ user.mentor ? ("Yes") : ("No") }</td >
+                            <td className='text-center border border-slate-400 px-5 text-blue-600 underline'><button onClick={() => handleClick(user.id)}>Delete</button></td>
                         </tr>
                     )) }
                 </tbody>
@@ -72,4 +74,3 @@ export default function Home({ data }) {
         </main>
     )
 }
-
