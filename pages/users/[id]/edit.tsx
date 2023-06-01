@@ -4,6 +4,7 @@ import { useRouter } from 'next/router'
 import prisma from '@/prisma/client'
 import React, { BaseSyntheticEvent, Component, useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import { getSubjects } from '@/utils/subjects';
 
 export async function getServerSideProps({ params }) {
 	const data = await prisma.user.findFirst({
@@ -22,9 +23,7 @@ export async function getServerSideProps({ params }) {
 
 
 export default function Profile({ data }) {
-	const subjects = [
-		'Biology', 'Chemistry', 'Physics', 'Calculus', 'History', 'Statistics'
-	]
+	const subjects = getSubjects()
 	const router = useRouter()
 	if(!data) return
 	if(!data.mentor){

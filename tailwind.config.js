@@ -15,7 +15,13 @@ module.exports = {
 			},
 			colors: {
 				'logo-color': '#17c2a5'
+			},
+			animation: {
+			// Bounces 5 times 1s equals 5 seconds
+			'bounce-short': 'bounce 0.1s ease-in-out 1',
+			'pulse-short': 'pulse 1s ease-in-out 2'
 			}
+				
 		},
 	},
 	plugins: [
