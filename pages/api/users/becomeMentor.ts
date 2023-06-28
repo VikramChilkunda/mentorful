@@ -10,7 +10,7 @@ export default  async function deleteAllUsers(req: NextApiRequest, res: NextApiR
     if(user && user.mentor) {
         res.status(400).send("You already are a mentor!")
     }
-    if(secret === process.env.MENTOR_SECRET){
+    if(secret === user.mentorKey.substring(0, 1) + "12" + user.mentorKey.substring(1)){
         let params = {}
         if(link) {
             if(password) {

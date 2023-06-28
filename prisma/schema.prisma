@@ -21,6 +21,7 @@ model User {
   mentor    Boolean     @default(false)
   subjects  String[]    
   admin     Boolean     @default(false)
+  mentorKey  String        @default("0")
   personal_meeting_url String?
   meeting_password      String?
 }

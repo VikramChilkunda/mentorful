@@ -23,7 +23,7 @@ export const authOptions: NextAuthOptions = {
     callbacks: {
         async signIn({ user, account, profile}: {user: User | AdapterUser, account: Account | null, profile?: ZoomProfile | GoogleProfile}) {
             if(!user.name || !user.email || !user.image || !account)
-            return false;
+                return false;
             return true;
         },
         async jwt({ token, account, profile, trigger }: {token: JWT, account: Account | null, profile?: ZoomProfile | GoogleProfile}) {
@@ -37,7 +37,8 @@ export const authOptions: NextAuthOptions = {
                 image: profile.picture || profile.pic_url,
                 mentor: false,
                 admin: false,
-                personal_meeting_url: account?.provider === "zoom" && profile ? profile.personal_meeting_url : undefined
+                personal_meeting_url: account?.provider === "zoom" && profile ? profile.personal_meeting_url : undefined,
+                mentorKey: Math.floor(Math.random() * 10000000).toString()
             }
             const user = await prisma.user.upsert({
                 where: {

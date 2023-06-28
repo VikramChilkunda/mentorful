@@ -94,6 +94,8 @@ function Navbar() {
     const { data: session, status } = useSession();
     const [isNavOpen, setIsNavOpen] = useState(false); // initiate isNavOpen state with false
     function SpecialLink(props) {
+        return <></>
+        //comment line above
         const href = props.href
         const router = useRouter()
         let linkStyle = ''
@@ -116,14 +118,15 @@ function Navbar() {
                 </a>
                 <nav>
                     <section className="MOBILE-MENU flex lg:hidden">
-                        <div
+                        {/* uncomment until line 130 */}
+                        {/* <div
                             className="HAMBURGER-ICON space-y-2"
                             onClick={ () => setIsNavOpen((prev) => !prev) } // toggle isNavOpen state on click
                         >
                             <span className="block h-0.5 w-7 animate-pulse bg-gray-600"></span>
                             <span className="block h-0.5 w-7 animate-pulse bg-gray-600"></span>
                             <span className="block h-0.5 w-7 animate-pulse bg-gray-600"></span>
-                        </div>
+                        </div> */}
 
                         <div className={ isNavOpen ? "showMenuNav h-screen bg-[#eee]" : "hideMenuNav" }>
                             <div
@@ -143,7 +146,7 @@ function Navbar() {
                                     <line x1="6" y1="6" x2="18" y2="18" />
                                 </svg>
                             </div>
-                            <ul className="MENU-LINK-MOBILE-OPEN flex flex-col items-center justify-between min-h-[100px] p-4 border border-5 border-logo-color rounded-lg bg-[#eee] md:flex-row 
+                            /* <ul className="MENU-LINK-MOBILE-OPEN flex flex-col items-center justify-between min-h-[100px] p-4 border border-5 border-logo-color rounded-lg bg-[#eee] md:flex-row 
                                 md:space-x-8 md:mt-0 md:text-sm md:font-medium md:border-0 md:bg-white">
                                 <a href="/">
                                     <img src="/Full logo.svg" className="w-full m-auto" alt="logo" />
@@ -203,11 +206,12 @@ function Navbar() {
                                         <button onClick={ () => { signIn() } } className="block py-2 pl-3 pr-4 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0">Sign In</button>
                                     </li>
                                 ) }
-                            </ul>
+                            </ul> */
                         </div>
                     </section>
-
-                    <ul className="DESKTOP-MENU hidden space-x-8 lg:flex p-4 mt-4 border rounded-lg bg md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium md:border-0 md:bg-white border-gray-700 ">
+                    {//uncomment until line 275
+                    }
+                    {/* <ul className="DESKTOP-MENU hidden space-x-8 lg:flex p-4 mt-4 border rounded-lg bg md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium md:border-0 md:bg-white border-gray-700 ">
                         { session && session.user && session.user.admin ? (
                             <li>
                                 <SpecialLink href='/admin' text='Admin Operations' />
@@ -268,7 +272,7 @@ function Navbar() {
                                 <button onClick={ () => { signIn() } } className="block py-2 pl-3 pr-4 text-black font-semibold uppercase">Sign In</button>
                             </li>
                         ) }
-                    </ul>
+                    </ul> */}
                 </nav>
                 <style>{ `
             .hideMenuNav {
